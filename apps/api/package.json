@@ -1,0 +1,30 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.tsx",
+  "scripts": {
+    "dev": "tsx watch src/index.tsx",
+    "build": "esbuild src/index.tsx --bundle --platform=node --outfile=dist/index.js --external:express --external:cors",
+    "start": "node dist/index.js",
+    "type-check": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "fastify": "^4.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.12",
+    "@types/react": "^18.0.22",
+    "@types/react-dom": "^18.0.7",
+    "esbuild": "^0.17.18",
+    "eslint-config-custom": "workspace:*",
+    "tsconfig": "workspace:*",
+    "tsx": "^3.12.7",
+    "types": "workspace:^0.0.1",
+    "typescript": "^4.9.5"
+  }
+}
