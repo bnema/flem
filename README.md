@@ -18,7 +18,7 @@ Clone the repo:
 git clone xxx
 ```
 
-Install dependencies (PNPM obligatory)
+Install dependencies (PNPM mandatory):
 
 ```bash
 pnpm i

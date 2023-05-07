@@ -9,9 +9,6 @@ import { AddressInfo } from "net";
 import middie, { NextHandleFunction } from "@fastify/middie";
 import cors from "cors";
 
-// Import custom types (Movie, TVShow, User)
-import { Movie, TVShow, User } from "types";
-
 // Create a Fastify instance with the logger 
 const fastify = Fastify({
   logger: true,
@@ -59,12 +56,15 @@ const privateOriginCheck: RouteOptions['preHandler'] = (request, reply, done) =>
   }
 };
 
-
-// Define a public health check route that returns server information
-fastify.get(
-  '/v1/healthcheck',
-  { preHandler: publicOriginCheck },
-  async (request, reply) => {
+// Define route for health checks
+fastify.get('/v1/healthcheck', async (request, reply) => {
+  if (!request.headers.origin || allowedOrigins.includes(request.headers.origin)) {
+    // Public route, return simple response
+    reply.send({
+      status: 'ok',
+    });
+  } else if (allowedOrigins.includes(request.headers.origin || '')) {
+    // Private route, return detailed server information
     fastify.server.getConnections((error, count) => {
       if (error) {
         reply.send({
@@ -79,8 +79,11 @@ fastify.get(
         });
       }
     });
+  } else {
+    // Origin is not allowed, return 403 Forbidden
+    reply.code(403).send({ error: 'Forbidden' });
   }
-);
+});
 
 // Define a private route for testing purposes
 fastify.get(
