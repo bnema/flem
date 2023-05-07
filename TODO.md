@@ -17,7 +17,7 @@
 
 - [x] Setup Fastify
 - [x] Create /v1/healthcheck endpoint
-- [ ] Create endpoints for CRUD operations on users and movies
+- [ ] Create endpoints for CRUD operations on users, movies and tv shows
 - [ ] Create security middleware for auth & roles check
 - [ ] Create error handling middleware
 - [ ] Create CRUD endpoints for GPT-3.5 responses (movies and tv shows)
