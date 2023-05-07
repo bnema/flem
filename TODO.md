@@ -16,11 +16,11 @@
 ### HTTP Server
 
 - [x] Setup Fastify
-- [ ] Create /v1/healthcheck endpoint
+- [x] Create /v1/healthcheck endpoint
 - [ ] Create endpoints for CRUD operations on users and movies
 - [ ] Create security middleware for auth & roles check
 - [ ] Create error handling middleware
-- [ ] Create endpoints for GPT-3.5 responses (movies and tv shows)
+- [ ] Create CRUD endpoints for GPT-3.5 responses (movies and tv shows)
 
 ### OPENAI API Client
 
