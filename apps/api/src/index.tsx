@@ -18,7 +18,7 @@ const fastify = Fastify({
 });
 
 // Allowed origins for incoming requests
-const allowedOrigins = ["http://localhost:3000", "http://localhost:3333"];
+const allowedOrigins = ["http://localhost:3000"];
 
 // Function to set up middleware for the Fastify instance
 const setupMiddleware = async () => {
