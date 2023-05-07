@@ -13,6 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fastify/middie": "^8.2.0",
+    "@types/cors": "^2.8.13",
     "cors": "^2.8.5",
     "fastify": "^4.17.0"
   },

@@ -10,7 +10,7 @@
 ### API Global
 
 - [ ] Setup Prisma + Postgres
-- [ ] Configure CORS
+- [x] Configure CORS
 - [ ] Configure basic user auth with KeyCloak
 
 ### HTTP Server
