@@ -4,13 +4,11 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install -g pnpm
-
-RUN pnpm install
+RUN npm install
 
 COPY . .
 
-RUN pnpm build --filter api
+RUN npm build --filter api
 
 EXPOSE 3333
 
