@@ -10,7 +10,7 @@ RUN pnpm install
 
 RUN pnpm build --filter api
 
-RUN pnpm install cors --filter api
+RUN pnpm install -g cors
 
 EXPOSE 3333
 
