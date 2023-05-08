@@ -6,12 +6,11 @@ COPY . .
 
 RUN npm install -g pnpm
 
-RUN npm install -g cors
+RUN pnpm install --filter api
 
-RUN pnpm install
+RUN pnpm add cors --filter api
 
 RUN pnpm build --filter api
-
 
 EXPOSE 3333
 
