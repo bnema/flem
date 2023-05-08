@@ -32218,17 +32218,740 @@ ${body}`);
   }
 });
 
+// ../../node_modules/.pnpm/fastify-plugin@4.5.0/node_modules/fastify-plugin/lib/getPluginName.js
+var require_getPluginName = __commonJS({
+  "../../node_modules/.pnpm/fastify-plugin@4.5.0/node_modules/fastify-plugin/lib/getPluginName.js"(exports, module2) {
+    "use strict";
+    var fpStackTracePattern = /at\s{1}(?:.*\.)?plugin\s{1}.*\n\s*(.*)/;
+    var fileNamePattern = /(\w*(\.\w*)*)\..*/;
+    module2.exports = function getPluginName(fn) {
+      if (fn.name.length > 0)
+        return fn.name;
+      const stackTraceLimit = Error.stackTraceLimit;
+      Error.stackTraceLimit = 10;
+      try {
+        throw new Error("anonymous function");
+      } catch (e) {
+        Error.stackTraceLimit = stackTraceLimit;
+        return extractPluginName(e.stack);
+      }
+    };
+    function extractPluginName(stack) {
+      const m = stack.match(fpStackTracePattern);
+      return m ? m[1].split(/[/\\]/).slice(-1)[0].match(fileNamePattern)[1] : "anonymous";
+    }
+    module2.exports.extractPluginName = extractPluginName;
+  }
+});
+
+// ../../node_modules/.pnpm/fastify-plugin@4.5.0/node_modules/fastify-plugin/lib/toCamelCase.js
+var require_toCamelCase = __commonJS({
+  "../../node_modules/.pnpm/fastify-plugin@4.5.0/node_modules/fastify-plugin/lib/toCamelCase.js"(exports, module2) {
+    "use strict";
+    module2.exports = function toCamelCase(name) {
+      if (name[0] === "@") {
+        name = name.slice(1).replace("/", "-");
+      }
+      const newName = name.replace(/-(.)/g, function(match, g1) {
+        return g1.toUpperCase();
+      });
+      return newName;
+    };
+  }
+});
+
+// ../../node_modules/.pnpm/fastify-plugin@4.5.0/node_modules/fastify-plugin/plugin.js
+var require_plugin2 = __commonJS({
+  "../../node_modules/.pnpm/fastify-plugin@4.5.0/node_modules/fastify-plugin/plugin.js"(exports, module2) {
+    "use strict";
+    var getPluginName = require_getPluginName();
+    var toCamelCase = require_toCamelCase();
+    var count = 0;
+    function plugin(fn, options = {}) {
+      let autoName = false;
+      if (typeof fn.default !== "undefined") {
+        fn = fn.default;
+      }
+      if (typeof fn !== "function") {
+        throw new TypeError(
+          `fastify-plugin expects a function, instead got a '${typeof fn}'`
+        );
+      }
+      if (typeof options === "string") {
+        options = {
+          fastify: options
+        };
+      }
+      if (typeof options !== "object" || Array.isArray(options) || options === null) {
+        throw new TypeError("The options object should be an object");
+      }
+      if (options.fastify !== void 0 && typeof options.fastify !== "string") {
+        throw new TypeError(`fastify-plugin expects a version string, instead got '${typeof options.fastify}'`);
+      }
+      if (!options.name) {
+        autoName = true;
+        options.name = getPluginName(fn) + "-auto-" + count++;
+      }
+      fn[Symbol.for("skip-override")] = options.encapsulate !== true;
+      fn[Symbol.for("fastify.display-name")] = options.name;
+      fn[Symbol.for("plugin-meta")] = options;
+      if (!fn.default) {
+        fn.default = fn;
+      }
+      const camelCase = toCamelCase(options.name);
+      if (!autoName && !fn[camelCase]) {
+        fn[camelCase] = fn;
+      }
+      return fn;
+    }
+    module2.exports = plugin;
+    module2.exports.default = plugin;
+    module2.exports.fastifyPlugin = plugin;
+  }
+});
+
+// ../../node_modules/.pnpm/path-to-regexp@6.2.1/node_modules/path-to-regexp/dist/index.js
+var require_dist2 = __commonJS({
+  "../../node_modules/.pnpm/path-to-regexp@6.2.1/node_modules/path-to-regexp/dist/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.pathToRegexp = exports.tokensToRegexp = exports.regexpToFunction = exports.match = exports.tokensToFunction = exports.compile = exports.parse = void 0;
+    function lexer(str) {
+      var tokens = [];
+      var i = 0;
+      while (i < str.length) {
+        var char = str[i];
+        if (char === "*" || char === "+" || char === "?") {
+          tokens.push({ type: "MODIFIER", index: i, value: str[i++] });
+          continue;
+        }
+        if (char === "\\") {
+          tokens.push({ type: "ESCAPED_CHAR", index: i++, value: str[i++] });
+          continue;
+        }
+        if (char === "{") {
+          tokens.push({ type: "OPEN", index: i, value: str[i++] });
+          continue;
+        }
+        if (char === "}") {
+          tokens.push({ type: "CLOSE", index: i, value: str[i++] });
+          continue;
+        }
+        if (char === ":") {
+          var name = "";
+          var j = i + 1;
+          while (j < str.length) {
+            var code = str.charCodeAt(j);
+            if (
+              // `0-9`
+              code >= 48 && code <= 57 || // `A-Z`
+              code >= 65 && code <= 90 || // `a-z`
+              code >= 97 && code <= 122 || // `_`
+              code === 95
+            ) {
+              name += str[j++];
+              continue;
+            }
+            break;
+          }
+          if (!name)
+            throw new TypeError("Missing parameter name at ".concat(i));
+          tokens.push({ type: "NAME", index: i, value: name });
+          i = j;
+          continue;
+        }
+        if (char === "(") {
+          var count = 1;
+          var pattern = "";
+          var j = i + 1;
+          if (str[j] === "?") {
+            throw new TypeError('Pattern cannot start with "?" at '.concat(j));
+          }
+          while (j < str.length) {
+            if (str[j] === "\\") {
+              pattern += str[j++] + str[j++];
+              continue;
+            }
+            if (str[j] === ")") {
+              count--;
+              if (count === 0) {
+                j++;
+                break;
+              }
+            } else if (str[j] === "(") {
+              count++;
+              if (str[j + 1] !== "?") {
+                throw new TypeError("Capturing groups are not allowed at ".concat(j));
+              }
+            }
+            pattern += str[j++];
+          }
+          if (count)
+            throw new TypeError("Unbalanced pattern at ".concat(i));
+          if (!pattern)
+            throw new TypeError("Missing pattern at ".concat(i));
+          tokens.push({ type: "PATTERN", index: i, value: pattern });
+          i = j;
+          continue;
+        }
+        tokens.push({ type: "CHAR", index: i, value: str[i++] });
+      }
+      tokens.push({ type: "END", index: i, value: "" });
+      return tokens;
+    }
+    function parse(str, options) {
+      if (options === void 0) {
+        options = {};
+      }
+      var tokens = lexer(str);
+      var _a = options.prefixes, prefixes = _a === void 0 ? "./" : _a;
+      var defaultPattern = "[^".concat(escapeString(options.delimiter || "/#?"), "]+?");
+      var result = [];
+      var key = 0;
+      var i = 0;
+      var path = "";
+      var tryConsume = function(type) {
+        if (i < tokens.length && tokens[i].type === type)
+          return tokens[i++].value;
+      };
+      var mustConsume = function(type) {
+        var value2 = tryConsume(type);
+        if (value2 !== void 0)
+          return value2;
+        var _a2 = tokens[i], nextType = _a2.type, index = _a2.index;
+        throw new TypeError("Unexpected ".concat(nextType, " at ").concat(index, ", expected ").concat(type));
+      };
+      var consumeText = function() {
+        var result2 = "";
+        var value2;
+        while (value2 = tryConsume("CHAR") || tryConsume("ESCAPED_CHAR")) {
+          result2 += value2;
+        }
+        return result2;
+      };
+      while (i < tokens.length) {
+        var char = tryConsume("CHAR");
+        var name = tryConsume("NAME");
+        var pattern = tryConsume("PATTERN");
+        if (name || pattern) {
+          var prefix = char || "";
+          if (prefixes.indexOf(prefix) === -1) {
+            path += prefix;
+            prefix = "";
+          }
+          if (path) {
+            result.push(path);
+            path = "";
+          }
+          result.push({
+            name: name || key++,
+            prefix,
+            suffix: "",
+            pattern: pattern || defaultPattern,
+            modifier: tryConsume("MODIFIER") || ""
+          });
+          continue;
+        }
+        var value = char || tryConsume("ESCAPED_CHAR");
+        if (value) {
+          path += value;
+          continue;
+        }
+        if (path) {
+          result.push(path);
+          path = "";
+        }
+        var open = tryConsume("OPEN");
+        if (open) {
+          var prefix = consumeText();
+          var name_1 = tryConsume("NAME") || "";
+          var pattern_1 = tryConsume("PATTERN") || "";
+          var suffix = consumeText();
+          mustConsume("CLOSE");
+          result.push({
+            name: name_1 || (pattern_1 ? key++ : ""),
+            pattern: name_1 && !pattern_1 ? defaultPattern : pattern_1,
+            prefix,
+            suffix,
+            modifier: tryConsume("MODIFIER") || ""
+          });
+          continue;
+        }
+        mustConsume("END");
+      }
+      return result;
+    }
+    exports.parse = parse;
+    function compile(str, options) {
+      return tokensToFunction(parse(str, options), options);
+    }
+    exports.compile = compile;
+    function tokensToFunction(tokens, options) {
+      if (options === void 0) {
+        options = {};
+      }
+      var reFlags = flags(options);
+      var _a = options.encode, encode = _a === void 0 ? function(x) {
+        return x;
+      } : _a, _b = options.validate, validate = _b === void 0 ? true : _b;
+      var matches = tokens.map(function(token) {
+        if (typeof token === "object") {
+          return new RegExp("^(?:".concat(token.pattern, ")$"), reFlags);
+        }
+      });
+      return function(data) {
+        var path = "";
+        for (var i = 0; i < tokens.length; i++) {
+          var token = tokens[i];
+          if (typeof token === "string") {
+            path += token;
+            continue;
+          }
+          var value = data ? data[token.name] : void 0;
+          var optional = token.modifier === "?" || token.modifier === "*";
+          var repeat = token.modifier === "*" || token.modifier === "+";
+          if (Array.isArray(value)) {
+            if (!repeat) {
+              throw new TypeError('Expected "'.concat(token.name, '" to not repeat, but got an array'));
+            }
+            if (value.length === 0) {
+              if (optional)
+                continue;
+              throw new TypeError('Expected "'.concat(token.name, '" to not be empty'));
+            }
+            for (var j = 0; j < value.length; j++) {
+              var segment = encode(value[j], token);
+              if (validate && !matches[i].test(segment)) {
+                throw new TypeError('Expected all "'.concat(token.name, '" to match "').concat(token.pattern, '", but got "').concat(segment, '"'));
+              }
+              path += token.prefix + segment + token.suffix;
+            }
+            continue;
+          }
+          if (typeof value === "string" || typeof value === "number") {
+            var segment = encode(String(value), token);
+            if (validate && !matches[i].test(segment)) {
+              throw new TypeError('Expected "'.concat(token.name, '" to match "').concat(token.pattern, '", but got "').concat(segment, '"'));
+            }
+            path += token.prefix + segment + token.suffix;
+            continue;
+          }
+          if (optional)
+            continue;
+          var typeOfMessage = repeat ? "an array" : "a string";
+          throw new TypeError('Expected "'.concat(token.name, '" to be ').concat(typeOfMessage));
+        }
+        return path;
+      };
+    }
+    exports.tokensToFunction = tokensToFunction;
+    function match(str, options) {
+      var keys = [];
+      var re = pathToRegexp(str, keys, options);
+      return regexpToFunction(re, keys, options);
+    }
+    exports.match = match;
+    function regexpToFunction(re, keys, options) {
+      if (options === void 0) {
+        options = {};
+      }
+      var _a = options.decode, decode = _a === void 0 ? function(x) {
+        return x;
+      } : _a;
+      return function(pathname) {
+        var m = re.exec(pathname);
+        if (!m)
+          return false;
+        var path = m[0], index = m.index;
+        var params = /* @__PURE__ */ Object.create(null);
+        var _loop_1 = function(i2) {
+          if (m[i2] === void 0)
+            return "continue";
+          var key = keys[i2 - 1];
+          if (key.modifier === "*" || key.modifier === "+") {
+            params[key.name] = m[i2].split(key.prefix + key.suffix).map(function(value) {
+              return decode(value, key);
+            });
+          } else {
+            params[key.name] = decode(m[i2], key);
+          }
+        };
+        for (var i = 1; i < m.length; i++) {
+          _loop_1(i);
+        }
+        return { path, index, params };
+      };
+    }
+    exports.regexpToFunction = regexpToFunction;
+    function escapeString(str) {
+      return str.replace(/([.+*?=^!:${}()[\]|/\\])/g, "\\$1");
+    }
+    function flags(options) {
+      return options && options.sensitive ? "" : "i";
+    }
+    function regexpToRegexp(path, keys) {
+      if (!keys)
+        return path;
+      var groupsRegex = /\((?:\?<(.*?)>)?(?!\?)/g;
+      var index = 0;
+      var execResult = groupsRegex.exec(path.source);
+      while (execResult) {
+        keys.push({
+          // Use parenthesized substring match if available, index otherwise
+          name: execResult[1] || index++,
+          prefix: "",
+          suffix: "",
+          modifier: "",
+          pattern: ""
+        });
+        execResult = groupsRegex.exec(path.source);
+      }
+      return path;
+    }
+    function arrayToRegexp(paths, keys, options) {
+      var parts = paths.map(function(path) {
+        return pathToRegexp(path, keys, options).source;
+      });
+      return new RegExp("(?:".concat(parts.join("|"), ")"), flags(options));
+    }
+    function stringToRegexp(path, keys, options) {
+      return tokensToRegexp(parse(path, options), keys, options);
+    }
+    function tokensToRegexp(tokens, keys, options) {
+      if (options === void 0) {
+        options = {};
+      }
+      var _a = options.strict, strict = _a === void 0 ? false : _a, _b = options.start, start2 = _b === void 0 ? true : _b, _c = options.end, end = _c === void 0 ? true : _c, _d = options.encode, encode = _d === void 0 ? function(x) {
+        return x;
+      } : _d, _e = options.delimiter, delimiter = _e === void 0 ? "/#?" : _e, _f = options.endsWith, endsWith = _f === void 0 ? "" : _f;
+      var endsWithRe = "[".concat(escapeString(endsWith), "]|$");
+      var delimiterRe = "[".concat(escapeString(delimiter), "]");
+      var route = start2 ? "^" : "";
+      for (var _i = 0, tokens_1 = tokens; _i < tokens_1.length; _i++) {
+        var token = tokens_1[_i];
+        if (typeof token === "string") {
+          route += escapeString(encode(token));
+        } else {
+          var prefix = escapeString(encode(token.prefix));
+          var suffix = escapeString(encode(token.suffix));
+          if (token.pattern) {
+            if (keys)
+              keys.push(token);
+            if (prefix || suffix) {
+              if (token.modifier === "+" || token.modifier === "*") {
+                var mod = token.modifier === "*" ? "?" : "";
+                route += "(?:".concat(prefix, "((?:").concat(token.pattern, ")(?:").concat(suffix).concat(prefix, "(?:").concat(token.pattern, "))*)").concat(suffix, ")").concat(mod);
+              } else {
+                route += "(?:".concat(prefix, "(").concat(token.pattern, ")").concat(suffix, ")").concat(token.modifier);
+              }
+            } else {
+              if (token.modifier === "+" || token.modifier === "*") {
+                route += "((?:".concat(token.pattern, ")").concat(token.modifier, ")");
+              } else {
+                route += "(".concat(token.pattern, ")").concat(token.modifier);
+              }
+            }
+          } else {
+            route += "(?:".concat(prefix).concat(suffix, ")").concat(token.modifier);
+          }
+        }
+      }
+      if (end) {
+        if (!strict)
+          route += "".concat(delimiterRe, "?");
+        route += !options.endsWith ? "$" : "(?=".concat(endsWithRe, ")");
+      } else {
+        var endToken = tokens[tokens.length - 1];
+        var isEndDelimited = typeof endToken === "string" ? delimiterRe.indexOf(endToken[endToken.length - 1]) > -1 : endToken === void 0;
+        if (!strict) {
+          route += "(?:".concat(delimiterRe, "(?=").concat(endsWithRe, "))?");
+        }
+        if (!isEndDelimited) {
+          route += "(?=".concat(delimiterRe, "|").concat(endsWithRe, ")");
+        }
+      }
+      return new RegExp(route, flags(options));
+    }
+    exports.tokensToRegexp = tokensToRegexp;
+    function pathToRegexp(path, keys, options) {
+      if (path instanceof RegExp)
+        return regexpToRegexp(path, keys);
+      if (Array.isArray(path))
+        return arrayToRegexp(path, keys, options);
+      return stringToRegexp(path, keys, options);
+    }
+    exports.pathToRegexp = pathToRegexp;
+  }
+});
+
+// ../../node_modules/.pnpm/@fastify+middie@8.2.0/node_modules/@fastify/middie/engine.js
+var require_engine = __commonJS({
+  "../../node_modules/.pnpm/@fastify+middie@8.2.0/node_modules/@fastify/middie/engine.js"(exports, module2) {
+    "use strict";
+    var reusify = require_reusify();
+    var { pathToRegexp } = require_dist2();
+    function middie2(complete) {
+      const middlewares = [];
+      const pool = reusify(Holder);
+      return {
+        use,
+        run
+      };
+      function use(url, f) {
+        if (f === void 0) {
+          f = url;
+          url = null;
+        }
+        let regexp;
+        if (url) {
+          regexp = pathToRegexp(sanitizePrefixUrl(url), [], {
+            end: false,
+            strict: false
+          });
+        }
+        if (Array.isArray(f)) {
+          for (const val of f) {
+            middlewares.push({
+              regexp,
+              fn: val
+            });
+          }
+        } else {
+          middlewares.push({
+            regexp,
+            fn: f
+          });
+        }
+        return this;
+      }
+      function run(req, res, ctx) {
+        if (!middlewares.length) {
+          complete(null, req, res, ctx);
+          return;
+        }
+        req.originalUrl = req.url;
+        const holder = pool.get();
+        holder.req = req;
+        holder.res = res;
+        holder.url = sanitizeUrl(req.url);
+        holder.context = ctx;
+        holder.done();
+      }
+      function Holder() {
+        this.next = null;
+        this.req = null;
+        this.res = null;
+        this.url = null;
+        this.context = null;
+        this.i = 0;
+        const that = this;
+        this.done = function(err) {
+          const req = that.req;
+          const res = that.res;
+          const url = that.url;
+          const context = that.context;
+          const i = that.i++;
+          req.url = req.originalUrl;
+          if (res.finished === true || res.writableEnded === true) {
+            that.req = null;
+            that.res = null;
+            that.context = null;
+            that.i = 0;
+            pool.release(that);
+            return;
+          }
+          if (err || middlewares.length === i) {
+            complete(err, req, res, context);
+            that.req = null;
+            that.res = null;
+            that.context = null;
+            that.i = 0;
+            pool.release(that);
+          } else {
+            const middleware = middlewares[i];
+            const fn = middleware.fn;
+            const regexp = middleware.regexp;
+            if (regexp) {
+              const result = regexp.exec(url);
+              if (result) {
+                req.url = req.url.replace(result[0], "");
+                if (req.url[0] !== "/") {
+                  req.url = "/" + req.url;
+                }
+                fn(req, res, that.done);
+              } else {
+                that.done();
+              }
+            } else {
+              fn(req, res, that.done);
+            }
+          }
+        };
+      }
+    }
+    function sanitizeUrl(url) {
+      for (var i = 0, len = url.length; i < len; i++) {
+        const charCode = url.charCodeAt(i);
+        if (charCode === 63 || charCode === 35) {
+          return url.slice(0, i);
+        }
+      }
+      return url;
+    }
+    function sanitizePrefixUrl(url) {
+      if (url === "")
+        return url;
+      if (url === "/")
+        return "";
+      if (url[url.length - 1] === "/")
+        return url.slice(0, -1);
+      return url;
+    }
+    module2.exports = middie2;
+  }
+});
+
+// ../../node_modules/.pnpm/@fastify+middie@8.2.0/node_modules/@fastify/middie/index.js
+var require_middie = __commonJS({
+  "../../node_modules/.pnpm/@fastify+middie@8.2.0/node_modules/@fastify/middie/index.js"(exports, module2) {
+    "use strict";
+    var fp = require_plugin2();
+    var Middie = require_engine();
+    var kMiddlewares = Symbol("fastify-middie-middlewares");
+    var kMiddie = Symbol("fastify-middie-instance");
+    function fastifyMiddie(fastify2, options, next) {
+      fastify2.decorate("use", use);
+      fastify2[kMiddlewares] = [];
+      fastify2[kMiddie] = Middie(onMiddieEnd);
+      fastify2.addHook(options.hook || "onRequest", runMiddie).addHook("onRegister", onRegister);
+      function use(path, fn) {
+        if (typeof path === "string") {
+          const prefix = this.prefix;
+          path = prefix + (path === "/" && prefix.length > 0 ? "" : path);
+        }
+        this[kMiddlewares].push([path, fn]);
+        if (fn == null) {
+          this[kMiddie].use(path);
+        } else {
+          this[kMiddie].use(path, fn);
+        }
+        return this;
+      }
+      function runMiddie(req, reply, next2) {
+        if (this[kMiddlewares].length > 0) {
+          req.raw.originalUrl = req.raw.url;
+          req.raw.id = req.id;
+          req.raw.hostname = req.hostname;
+          req.raw.protocol = req.protocol;
+          req.raw.ip = req.ip;
+          req.raw.ips = req.ips;
+          req.raw.log = req.log;
+          req.raw.body = req.body;
+          req.raw.query = req.query;
+          reply.raw.log = req.log;
+          this[kMiddie].run(req.raw, reply.raw, next2);
+        } else {
+          next2();
+        }
+      }
+      function onMiddieEnd(err, req, res, next2) {
+        next2(err);
+      }
+      function onRegister(instance) {
+        const middlewares = instance[kMiddlewares].slice();
+        instance[kMiddlewares] = [];
+        instance[kMiddie] = Middie(onMiddieEnd);
+        instance.decorate("use", use);
+        for (const middleware of middlewares) {
+          instance.use(...middleware);
+        }
+      }
+      next();
+    }
+    module2.exports = fp(fastifyMiddie, {
+      fastify: "4.x",
+      name: "@fastify/middie"
+    });
+    module2.exports.default = fastifyMiddie;
+    module2.exports.fastifyMiddie = fastifyMiddie;
+  }
+});
+
 // src/index.tsx
 var import_fastify = __toESM(require_fastify());
+var import_middie = __toESM(require_middie());
+var import_cors = __toESM(require("cors"));
 var fastify = (0, import_fastify.default)({
-  logger: false
+  logger: true
 });
-fastify.get("/", async (request, reply) => {
-  return { hello: "world" };
+var allowedOrigins = ["http://localhost:3000"];
+var setupMiddleware = async () => {
+  await fastify.register(import_middie.default);
+  fastify.use(
+    (0, import_cors.default)({
+      origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      },
+      credentials: true
+    })
+  );
+};
+var privateOriginCheck = (request, reply, done) => {
+  if (allowedOrigins.includes(request.headers.origin || "")) {
+    done();
+  } else {
+    reply.code(403).send({ error: "Forbidden" });
+  }
+};
+fastify.get("/v1/health", async (request, reply) => {
+  if (!request.headers.origin || allowedOrigins.includes(request.headers.origin)) {
+    reply.send({
+      status: "ok"
+    });
+  } else if (allowedOrigins.includes(request.headers.origin || "")) {
+    fastify.server.getConnections((error, count) => {
+      if (error) {
+        reply.send({
+          status: "error",
+          error: error.message
+        });
+      } else {
+        reply.send({
+          status: "ok",
+          uptime: process.uptime(),
+          connections: count
+        });
+      }
+    });
+  } else {
+    reply.code(403).send({ error: "Forbidden" });
+  }
 });
+fastify.get(
+  "/v1/private",
+  { preHandler: privateOriginCheck },
+  async (request, reply) => {
+    reply.send({
+      status: "ok",
+      message: "This is a private route"
+    });
+  }
+);
 var start = async () => {
   try {
+    await setupMiddleware();
     await fastify.listen({ port: 3333 });
+    const address = fastify.server.address();
+    if (address !== null) {
+      const port = typeof address === "string" ? address : address.port;
+      console.log(`Server started on port ${port}`);
+    } else {
+      console.error("Failed to get the server address: address is null.");
+    }
   } catch (err) {
     console.error(err);
   }

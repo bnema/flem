@@ -57,7 +57,7 @@ const privateOriginCheck: RouteOptions['preHandler'] = (request, reply, done) =>
 };
 
 // Define route for health checks
-fastify.get('/v1/healthcheck', async (request, reply) => {
+fastify.get('/v1/health', async (request, reply) => {
   if (!request.headers.origin || allowedOrigins.includes(request.headers.origin)) {
     // Public route, return simple response
     reply.send({

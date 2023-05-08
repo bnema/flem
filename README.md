@@ -12,12 +12,6 @@ Install typescript globally:
 npm i -g typescript
 ```
 
-Clone the repo:
-
-```bash
-git clone xxx
-```
-
 Install dependencies (PNPM mandatory):
 
 ```bash
