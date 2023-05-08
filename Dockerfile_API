@@ -1,14 +1,14 @@
-FROM node:19
+FROM node:lts-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
-
-RUN npm install
-
 COPY . .
 
-RUN npm build --filter api
+RUN npm install -g pnpm
+
+RUN pnpm install
+
+RUN pnpm build --filter api
 
 EXPOSE 3333
 
