@@ -6,12 +6,16 @@ COPY . .
 
 RUN npm install -g pnpm
 
-RUN pnpm install --filter api
-
-RUN pnpm add cors --filter api
+RUN pnpm install
 
 RUN pnpm build --filter api
 
-EXPOSE 3333
+# Define some ENV Vars
+ENV PORT=3333 \
+  DIRECTORY=/app \
+  IS_DOCKER=true
+
 
 CMD ["node", "dist/index.js"]
+
+EXPOSE ${PORT}:80
