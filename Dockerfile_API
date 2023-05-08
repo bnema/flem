@@ -10,6 +10,8 @@ RUN pnpm install
 
 RUN pnpm build --filter api
 
+RUN pnpm install cors
+
 EXPOSE 3333
 
 CMD ["node", "dist/index.js"]
