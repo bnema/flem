@@ -1,68 +1,45 @@
-
 // Tous les types de données dont le front et le back ont besoin
 
-export type User = {
-    id: number;
-    username: string;
-    email: string;
-    password: string;
-    role: string;
-    createdAt: string;
-    updatedAt: string;
-};
-
-export type UserList = User[];
-
+// TMDB Movie type
 export type Movie = {
+  adult: boolean;
+  backdrop_path: string;
+  belongs_to_collection: null | unknown;
+  budget: number;
+  genres: {
     id: number;
-    title: string;
-    description: string;
-    releaseDate: string;
-    duration: number;
-    actors: string;
-    director: string;
-    poster: string;
-    createdAt: string;
-    updatedAt: string;
-};
-
-export type MovieList = Movie[];
-
-export type TVShow = {
+    name: string;
+  }[];
+  homepage: string;
+  id: number;
+  imdb_id: string;
+  original_language: string;
+  original_title: string;
+  overview: string;
+  popularity: number;
+  poster_path: string;
+  production_companies: {
     id: number;
-    title: string;
-    description: string;
-    releaseDate: string;
-    actors: string;
-    director: string;
-    poster: string;
-    created: string;
-    updated: string;
+    logo_path: string | null;
+    name: string;
+    origin_country: string;
+  }[];
+  production_countries: {
+    iso_3166_1: string;
+    name: string;
+  }[];
+  release_date: string;
+  revenue: number;
+  runtime: number;
+  spoken_languages: {
+    english_name: string;
+    iso_639_1: string;
+    name: string;
+  }[];
+  status: string;
+  tagline: string;
+  title: string;
+  video: boolean;
+  vote_average: number;
+  vote_count: number;
 };
-
-export type TVShowList = TVShow[];
-
-export type TVShowHasSeasons = {
-    id: number;
-    tvShowId: number;
-    seasonNumber: number;
-    createdAt: string;
-    updatedAt: string;
-};
-
-export type UserHasMovies = {
-    id: number;
-    userId: number;
-    movieId: number;
-    createdAt: string;
-    updatedAt: string;
-};
-
-export type UserHasTVShows = {
-    id: number;
-    userId: number;
-    tvShowId: number;
-    createdAt: string;
-    updatedAt: string;
-};
-
