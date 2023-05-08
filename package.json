@@ -14,5 +14,8 @@
     "types": "workspace:*"
   },
   "packageManager": "pnpm@7.15.0",
-  "name": "Suggestio"
+  "name": "Suggestio",
+  "dependencies": {
+    "cors": "^2.8.5"
+  }
 }
