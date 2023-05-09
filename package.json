@@ -1,21 +1,21 @@
 {
-  "private": true,
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
-  },
-  "devDependencies": {
-    "eslint": "^7.32.0",
-    "eslint-config-custom": "workspace:*",
-    "prettier": "^2.5.1",
-    "turbo": "^1.9.3",
-    "types": "workspace:*"
-  },
-  "packageManager": "pnpm@7.15.0",
-  "name": "Suggestio",
-  "dependencies": {
-    "cors": "^2.8.5"
-  }
+	"name": "@flem/root",
+	"version": "0.0.0",
+	"private": true,
+	"packageManager": "yarn@3.2.4",
+	"workspaces": [
+		"apps/*",
+		"configs/*",
+		"packages/*"
+	],
+	"scripts": {
+		"dev": "turbo run dev",
+		"build": "turbo run build",
+		"start": "turbo run start",
+		"test": "turbo run test",
+		"lint": "turbo run lint"
+	},
+	"devDependencies": {
+		"turbo": "^1.9.3"
+	}
 }
