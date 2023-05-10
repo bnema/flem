@@ -1,0 +1,8 @@
+{
+  "name": "@flem/root",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ]
+}
