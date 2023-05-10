@@ -1,11 +1,11 @@
 {
   "name": "@flem/api",
   "version": "0.0.1",
-  "main": "src/index.tsx",
+  "main": "src/index.ts",
   "private": true,
   "scripts": {
-    "dev": "tsx watch src/index.tsx",
-    "build": "esbuild src/index.tsx --bundle --platform=node --outfile=./dist/index.js --external:express --external:cors",
+    "dev": "tsx watch src/index.ts",
+    "build": "esbuild src/index.ts --bundle --platform=node --outfile=./dist/index.js --external:express --external:cors",
     "start": "node ./dist/index.js",
     "type-check": "tsc"
   },
@@ -14,11 +14,12 @@
   "license": "ISC",
   "dependencies": {
     "@fastify/middie": "^8.2.0",
+    "@flem/types": "^0.0.1",
     "@types/cors": "^2.8.13",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "fastify": "^4.17.0",
-    "@flem/types": "^0.0.1"
+    "mongoose": "^7.1.0"
   },
   "devDependencies": {
     "@types/node": "^17.0.12",

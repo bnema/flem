@@ -1,5 +1,5 @@
-import { createServer } from "../server";
-import { registerRoutes } from "../routes";
+import { createServer } from "./server";
+import { registerRoutes } from "./routes";
 import { AddressInfo } from "net";
 
 const fastify = createServer();

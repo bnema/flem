@@ -1,5 +1,7 @@
 // Path: apps\api\features\tmdb\requests.tsx
-import { TMDB_API_KEY, TMDB_API_URL } from "./config";
+import { TMDB_API_KEY, TMDB_API_URL } from "../../config";
+import { Movie } from "@flem/types";
+import { saveMovie } from "../../db/mongo-handlers";
 
 
 export const searchMoviesByTitle = async (title: string) => {
@@ -9,7 +11,7 @@ export const searchMoviesByTitle = async (title: string) => {
 
   const data = await response.json();
   console.log(data);
-  return data.results; // Make sure to return the results array
+  return data.results;
 };
 
 export const getMovieDetails = async (movieId: number) => {
@@ -18,9 +20,8 @@ export const getMovieDetails = async (movieId: number) => {
   );
 
   const data = await response.json();
-  // data is a json object with one or multiple movies details
-    // We need to store the details in Redis but first we need to convert it to an array
-    const movies = Array.isArray(data) ? data : [data];
+  
+  await saveMovie(data);
 
   return data;
 };
