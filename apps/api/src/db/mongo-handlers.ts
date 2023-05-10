@@ -1,9 +1,11 @@
+// Path : apps/api/src/db/mongo-handlers.ts
 import { connectDB } from "../config/mongodb";
 import { MovieModel } from "./mongo-models";
 import {Movie} from '@flem/types';
+import { translateToFrench } from "../features/openai/requests";
 
 // Function to save movies in mongoDB
-export const saveMovie = async (data: Movie) => {
+export const saveMovie = async (data: Movie, language: string ='en') => {
 async function saveMovie() {
 
         await connectDB();
@@ -19,10 +21,14 @@ async function saveMovie() {
         });
     
         await movie.save();
-        console.log('Movie saved');
+        console.log('Movie saved for language: ' + language);
+        
+        await translateToFrench(movie);
+        
     }
-    
     await saveMovie();
+
+
 }
 
 // Function to get movies from mongoDB
