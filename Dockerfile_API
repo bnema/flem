@@ -12,6 +12,6 @@ ENV PORT=3333 \
   IS_DOCKER=true
 
 
-CMD ["node", "./dist/api.js"]
+CMD ["npm run start_api"
 
 EXPOSE ${PORT}:80
