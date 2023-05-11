@@ -8,8 +8,8 @@ COPY package*.json .
 
 RUN npm install
 
-# Copy dist folder
-COPY dist/ .
+# Copy all files
+COPY . .
 
 # Define some ENV Vars
 ENV PORT=3333 \
