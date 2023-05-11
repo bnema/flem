@@ -9,7 +9,6 @@ RUN npm install
 
 # Define some ENV Vars
 ENV PORT=3333 \
-  DIRECTORY=/app \
   IS_DOCKER=true
 
 
