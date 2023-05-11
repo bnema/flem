@@ -11,4 +11,5 @@ export const MovieModel = model<Movie>('Movie', new Schema({
   spoken_languages: Array,
   vote_average: Number,
   poster_path: String,
+  language: String,  // Add this line to set the language of the movie data
 }));

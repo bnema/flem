@@ -6,6 +6,7 @@ import {
   getMinMaxMovieID,
 } from "./requests";
 import { Movie } from "@flem/types";
+import { translateMovieToFrench } from "../openai/handlers";
 
 export const registerTmdbRoutes = (fastify: FastifyInstance) => {
   // Route to return all the movies with a given title
@@ -45,6 +46,13 @@ export const registerTmdbRoutes = (fastify: FastifyInstance) => {
           ids.map(async (id) => {
             const details = await getMovieDetails(id);
             return details;
+          })
+        );
+        // for each movies, we translate in french
+        const resultsFrench = await Promise.all(
+          results.map(async (movie) => {
+            const frenchMovie = await translateMovieToFrench(movie);
+            return frenchMovie;
           })
         );
 

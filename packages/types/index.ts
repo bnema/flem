@@ -2,6 +2,7 @@
 
 // TMDB Movie type
 export type Movie = {
+  language: string;
   adult: boolean;
   backdrop_path: string;
   belongs_to_collection: null | unknown;
