@@ -7,8 +7,14 @@ import { translateToFrench } from "../features/openai/requests";
 // Function to save movies in mongoDB
 export const saveMovie = async (data: Movie, language: string ='en') => {
 async function saveMovie() {
-
         await connectDB();
+
+        // Before saving we check if the movie is already in the database
+        const movieExists = await MovieModel.exists({ id: data.id });
+        if (movieExists) {
+            console.log(`Movie ${data.id} already exists in the database`);
+            return;
+        }
         const movie = new MovieModel({
         id: data.id,
         title: data.title,
@@ -21,9 +27,8 @@ async function saveMovie() {
         });
     
         await movie.save();
-        console.log('Movie saved for language: ' + language);
-        
-        await translateToFrench(movie);
+        console.log(` Movie ${data.id} saved in the database`);
+    
         
     }
     await saveMovie();
@@ -31,15 +36,11 @@ async function saveMovie() {
 
 }
 
-// Function to get movies from mongoDB
+// Function to get movies from MongoDB
 export const getMovie = async (movieId: number) => {
-    async function getMovie() {
-        await connectDB();
-    
-        const movie = await MovieModel.findOne({ id: movieId });
-    
-        return movie;
-    }
+  await connectDB();
 
-    return await getMovie();
+  const movie = await MovieModel.findOne({ id: movieId });
+
+  return movie;
 }

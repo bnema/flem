@@ -8,8 +8,9 @@ import {
 import { Movie } from "@flem/types";
 
 export const registerTmdbRoutes = (fastify: FastifyInstance) => {
+  // Route to return all the movies with a given title
   fastify.post<{ Body: { titles: string[] } }>(
-    "/v1/tmdb/query/title",
+    "/v1/tmdb/movies/post/title",
     async (request, reply) => {
       try {
       const { titles } = request.body;
@@ -35,7 +36,8 @@ export const registerTmdbRoutes = (fastify: FastifyInstance) => {
   );
 
   fastify.post<{ Body: { ids: number[] } }>( 
-  "/v1/tmdb/query/id",
+  // Route to return all the movies from a given list of IDs
+  "/v1/tmdb/movies/post/ids",
     async (request, reply) => {
       try {
       const { ids } = request.body;
@@ -66,11 +68,19 @@ fastify.get('/v1/tmdb/random10', async (request, reply) => {
     // Use Promise.all to fetch the details of all 10 movies
     const results = await Promise.all(
       randomIds.map(async (id) => {
-        const details = await getMovieDetails(id);
+        let details = await getMovieDetails(id);
+        
+        // Keep fetching a new movie while the overview is empty
+        while (details.overview === "") {
+          console.log(`Empty overview for movie ${id}, refetching...`);
+          const newId = Math.floor(Math.random() * (maxID - minID + 1) + minID);
+          details = await getMovieDetails(newId);
+        }
+
+
         return details;
       }),
     );
-
     // Send the movie details as a JSON response
     reply.send(results);
   } catch (err) {

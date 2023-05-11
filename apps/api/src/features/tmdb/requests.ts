@@ -1,7 +1,6 @@
 // Path: apps\api\features\tmdb\requests.tsx
 import { TMDB_API_KEY, TMDB_API_URL } from "../../config";
-import { Movie } from "@flem/types";
-import { saveMovie } from "../../db/mongo-handlers";
+import { saveMovie, getMovie } from "../../db/mongo-handlers";
 
 
 export const searchMoviesByTitle = async (title: string) => {
@@ -10,30 +9,40 @@ export const searchMoviesByTitle = async (title: string) => {
   );
 
   const data = await response.json();
-  console.log(data);
   return data.results;
 };
 
 export const getMovieDetails = async (movieId: number) => {
-  const response = await fetch(
-    `${TMDB_API_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}`
-  );
+  try {
+    // Check if the movie is already in the database to avoid unnecessary API calls
+    const movie = await getMovie(movieId);
+    if (movie) {
+      return movie;
+    }
+    // If the movie is not in the database, fetch it from TMDB and save it in the database
+    const response = await fetch(
+      `${TMDB_API_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}`
+    );
 
-  const data = await response.json();
-  
-  await saveMovie(data);
+    const data = await response.json();
 
-  return data;
+    await saveMovie(data);
+
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw new Error(`Failed to get movie details for id ${movieId}`);
+  }
 };
 
 export const getMinMaxMovieID = async () => {
-  // Fetch the data for the first page of movies sorted by popularity in ascending order
+  // Fetch the data for the first page of movies sorted by popularity in ascending order and disable adult content
   const minResponse = await fetch(
-    `${TMDB_API_URL}/discover/movie?api_key=${TMDB_API_KEY}&sort_by=popularity.asc&page=1`
+    `${TMDB_API_URL}/discover/movie?api_key=${TMDB_API_KEY}&sort_by=popularity.asc&page=1&include_adult=false`
   );
-  // Fetch the data for the 500th page of movies sorted by popularity in ascending order
+  // Fetch the data for the 500th page of movies sorted by popularity in ascending order and disable adult content
   const maxResponse = await fetch(
-    `${TMDB_API_URL}/discover/movie?api_key=${TMDB_API_KEY}&sort_by=popularity.asc&page=500`
+    `${TMDB_API_URL}/discover/movie?api_key=${TMDB_API_KEY}&sort_by=popularity.asc&page=500&include_adult=false`
   );
 
   // If either of the API requests failed, throw an error with the corresponding status texts
