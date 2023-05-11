@@ -28,8 +28,6 @@ export const getMovieDetails = async (movieId: number) => {
 
     const data = await response.json();
 
-    console.log(data);
-
     // If the movie does not have an id or title or overview, then we do not save or return the movie
     if (!data.id || !data.title || !data.overview) {
       console.log(`Movie ${movieId} does not have an id or title or overview`);
