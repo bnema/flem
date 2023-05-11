@@ -4,11 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-cd /app/api
-
-RUN npm install
-
-RUN npm run build
+RUN 'cd /app/api && npm install && npm run build'
 
 # Define some ENV Vars
 ENV PORT=3333 \
