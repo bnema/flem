@@ -6,6 +6,8 @@ import {
   getMinMaxMovieID,
 } from "./requests";
 import { Movie } from "@flem/types";
+import { translateMovieToFrench } from "../openai/handlers";
+import { log } from "console";
 
 export const registerTmdbRoutes = (fastify: FastifyInstance) => {
   // Route to return all the movies with a given title
@@ -72,6 +74,17 @@ fastify.get("/v1/tmdb/random10", async (request, reply) => {
         console.log(`Invalid movie ${id}, refetching...`);
       }
     }
+
+    // for each movie, we translate in French in the background (we don't wait for the result)
+    results.forEach((movie) => {
+      translateMovieToFrench(movie)
+        .then(frenchMovie => {
+          log(`Movie ${movie.id} translated to French`);
+        })
+        .catch(err => {
+          console.error(`Error translating movie: ${err}`);
+        });
+    });
 
     reply.send(results);
   } catch (err) {
