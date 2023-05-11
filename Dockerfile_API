@@ -3,7 +3,7 @@ WORKDIR /app
 EXPOSE 3333
 # Copy the api.js file to the container at /api.js
 
-COPY [".", "/app/"]
+COPY [".", "./"]
 
 #CMD ["npm", "run", "start_api"]
 RUN node dist/api.js
