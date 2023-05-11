@@ -2,7 +2,7 @@
   "name": "@flem/root",
   "private": true,
   "scripts": {
-    "start_api": "node ./dist/api.js"
+    "start_api": "node dist/api.js"
   },
   "workspaces": [
     "packages/*",
