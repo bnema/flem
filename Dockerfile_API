@@ -1,13 +1,9 @@
 FROM node:20
-
+WORKDIR /app
+EXPOSE 3333
 # Copy the api.js file to the container at /api.js
 
 COPY ["dist/api.js", "./"]
-# Define some ENV Vars
-ENV PORT=3333 \
-  IS_DOCKER=true
 
 #CMD ["npm", "run", "start_api"]
-CMD ["node", "api.js"]
-
-EXPOSE ${PORT}:80
+RUN node api.js
