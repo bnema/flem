@@ -12,6 +12,7 @@ ENV PORT=3333 \
   IS_DOCKER=true
 
 
-CMD ["npm run start_api"
+CMD ["npm"] 
+CMD ["run", "start_api"]
 
 EXPOSE ${PORT}:80
