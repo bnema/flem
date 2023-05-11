@@ -6,4 +6,4 @@ EXPOSE 3333
 COPY [".", "/app/"]
 
 #CMD ["npm", "run", "start_api"]
-RUN node api.js
+RUN node dist/api.js
