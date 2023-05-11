@@ -1,13 +1,14 @@
 FROM node:lts-alpine
 
 
-# Copy all files
-COPY ./dist/api.js /app/api.js
+# Copy 
+COPY dist/api.js .
 
 # Define some ENV Vars
 ENV PORT=3333 \
   IS_DOCKER=true
 
-CMD ["npm", "run", "start_api"]
+#CMD ["npm", "run", "start_api"]
+CMD ["node", "api.js"]
 
 EXPOSE ${PORT}:80
