@@ -8,8 +8,7 @@ registerRoutes(fastify);
 const start = async () => {
   try {
     console.log("Starting server...");
-    await fastify.listen({ port: 3333 });
-
+    await fastify.listen({ port: 3333, host: '0.0.0.0' });
     const address = fastify.server.address();
     if (address !== null) {
       const port = typeof address === "string" ? address : (address as AddressInfo).port;

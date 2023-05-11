@@ -10020,9 +10020,9 @@ var require_subschema = __commonJS({
   }
 });
 
-// node_modules/fast-deep-equal/index.js
+// ../../node_modules/fast-deep-equal/index.js
 var require_fast_deep_equal = __commonJS({
-  "node_modules/fast-deep-equal/index.js"(exports, module2) {
+  "../../node_modules/fast-deep-equal/index.js"(exports, module2) {
     "use strict";
     module2.exports = function equal(a, b) {
       if (a === b)
@@ -97821,7 +97821,7 @@ registerRoutes(fastify);
 var start = async () => {
   try {
     console.log("Starting server...");
-    await fastify.listen({ port: 3333 });
+    await fastify.listen({ port: 3333, host: "0.0.0.0" });
     const address = fastify.server.address();
     if (address !== null) {
       const port = typeof address === "string" ? address : address.port;
