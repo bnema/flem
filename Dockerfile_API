@@ -13,6 +13,6 @@ ENV PORT=3333 \
   IS_DOCKER=true
 
 
-CMD ["node", "dist/api.js"]
+CMD ["node", "./dist/api.js"]
 
 EXPOSE ${PORT}:80
