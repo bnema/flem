@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "esbuild src/index.ts --bundle --platform=node --outfile=./dist/index.js --external:express --external:cors",
-    "start": "node ./dist/index.js",
+    "build": "esbuild src/index.ts --bundle --platform=node --outfile=../../dist/api.js --external:express --external:cors",
+    "start": "node ../../dist/api.js",
     "type-check": "tsc"
   },
   "keywords": [],
