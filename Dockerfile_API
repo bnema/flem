@@ -1,15 +1,8 @@
 FROM node:lts-alpine
 
-# Create app directory
-WORKDIR /app
-
-# Copy package.json and package-lock.json
-COPY package*.json .
-
-RUN npm install
 
 # Copy all files
-COPY . .
+COPY ./dist/api.js /app/api.js
 
 # Define some ENV Vars
 ENV PORT=3333 \
