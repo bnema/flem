@@ -1,11 +1,13 @@
 // Path: apps\api\features\tmdb\requests.tsx
 import { TMDB_API_KEY, TMDB_API_URL } from "../../config";
 import { saveMovie, getMovie } from "../../db/mongo-handlers";
-
+import { checkBlacklist } from "../../config/filters";
 
 export const searchMoviesByTitle = async (title: string) => {
   const response = await fetch(
-    `${TMDB_API_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(title)}`
+    `${TMDB_API_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(
+      title
+    )}`
   );
 
   const data = await response.json();
@@ -21,10 +23,34 @@ export const getMovieDetails = async (movieId: number) => {
     }
     // If the movie is not in the database, fetch it from TMDB and save it in the database
     const response = await fetch(
-      `${TMDB_API_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}`
+      `${TMDB_API_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&include_adult=false`
     );
 
     const data = await response.json();
+
+    console.log(data);
+
+    // If the movie does not have an id or title or overview, then we do not save or return the movie
+    if (!data.id || !data.title || !data.overview) {
+      console.log(`Movie ${movieId} does not have an id or title or overview`);
+      return;
+    } else if (data.adult) {
+      console.log(`Movie ${movieId} is an adult movie`);
+      return;
+    } else {
+      // Pass the data to the blacklist filter function checkBlacklist
+      const blacklistWords = await checkBlacklist(data);
+
+      // If the blacklist filter is not empty, then we do not save or return the movie
+      if (blacklistWords.length > 0) {
+        console.log(
+          `Movie ${movieId} contains the following blacklisted words: ${blacklistWords.join(
+            ", "
+          )}`
+        );
+        return;
+      }
+    }
 
     await saveMovie(data);
 
@@ -47,7 +73,9 @@ export const getMinMaxMovieID = async () => {
 
   // If either of the API requests failed, throw an error with the corresponding status texts
   if (!minResponse.ok || !maxResponse.ok) {
-    throw new Error(`TMDB API request failed: ${minResponse.statusText}, ${maxResponse.statusText}`);
+    throw new Error(
+      `TMDB API request failed: ${minResponse.statusText}, ${maxResponse.statusText}`
+    );
   }
 
   // Parse the response data into JSON format

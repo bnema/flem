@@ -56,37 +56,27 @@ export const registerTmdbRoutes = (fastify: FastifyInstance) => {
     }
   );
 
-  fastify.get("/v1/tmdb/random10", async (request, reply) => {
-    try {
-      // Call the 'getMinMaxMovieID' function to get the minimum and maximum movie IDs
-      const { minID, maxID } = await getMinMaxMovieID();
+fastify.get("/v1/tmdb/random10", async (request, reply) => {
+  try {
+    const { minID, maxID } = await getMinMaxMovieID();
+    const results = [];
 
-      // Initialize an empty results array
-      const results = [];
+    while (results.length < 10) {
+      const id = Math.floor(Math.random() * (maxID - minID + 1) + minID);
+      const details = await getMovieDetails(id);
 
-      // Keep fetching a movie if the overview is empty or until the results length is 10
-      while (results.length < 10) {
-        const id = Math.floor(Math.random() * (maxID - minID + 1) + minID);
-        const details = await getMovieDetails(id);
-
-        // If the overview is not empty, push the details to the results array
-        if (
-          details.overview &&
-          details.overview !== "" &&
-          details.overview !== null
-        ) {
-          results.push(details);
-        } else {
-          console.log(`Empty overview for movie ${id}, refetching...`);
-        }
+      // If 'details' is not undefined, push it to the results array
+      if (details) {
+        results.push(details);
+      } else {
+        console.log(`Invalid movie ${id}, refetching...`);
       }
-
-      // Send the movie details as a JSON response
-      reply.send(results);
-    } catch (err) {
-      // If there is an error, log it to the console and send a 500 error response
-      console.error(err);
-      reply.status(500).send({ error: "Something went wrong" });
     }
-  });
+
+    reply.send(results);
+  } catch (err) {
+    console.error(err);
+    reply.status(500).send({ error: "Something went wrong" });
+  }
+});
 };
