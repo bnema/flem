@@ -1,8 +1,8 @@
 FROM node:20
 
-# Copy 
-COPY dist/api.js .
+# Copy the api.js file to the container at /api.js
 
+COPY ["dist/api.js", "./"]
 # Define some ENV Vars
 ENV PORT=3333 \
   IS_DOCKER=true
