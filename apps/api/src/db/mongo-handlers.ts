@@ -4,7 +4,7 @@ import { MovieModel } from "./mongo-models";
 import {Movie} from '@flem/types';
 
 // Function to save movies in mongoDB
-export const saveMovie = async (data: Movie, language: string ='en') => {
+export const saveMovie = async (data: Movie, language: string ='english') => {
   await connectDB();
 
   // Before saving we check if the movie is already in the database
@@ -35,7 +35,7 @@ export const saveMovieInFrench = async (data: Movie) => {
   await connectDB();
 
   // Save the translated movie in MongoDB
-  await saveMovie(data, 'fr');
+  await saveMovie(data, 'french');
 }
 
 // Function to get movies from MongoDB
