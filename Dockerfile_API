@@ -4,11 +4,11 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm install -g pnpm
+cd /app/api
 
-RUN pnpm install
+RUN npm install
 
-RUN pnpm build --filter api
+RUN npm run build
 
 # Define some ENV Vars
 ENV PORT=3333 \

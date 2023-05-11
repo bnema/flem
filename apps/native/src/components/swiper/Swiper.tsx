@@ -13,16 +13,8 @@ export default function Swiper() {
     const swipe = useRef(new Animated.ValueXY()).current
     const tiltSign = useRef(new Animated.Value(1)).current
 
-    // useEffect(() => {
-    //     if (!nanars.length) {
-    //         setNanars(nanarsArray)
-    //     }
-    // }, [nanars.length])
-
     useEffect(() => {
-        // fetch(`https://localhost:3333/v1/tmdb/random10`)
-        // fetch(`http://192.168.1.163:3333/v1/tmdb/random10`)
-        fetch(`http://localhost:3333/v1/tmdb/random10`)
+        fetch(`http://192.168.1.151:3333/v1/tmdb/random10`)
         .then(response => response.json())
         .then(data => {
             const caca = data
@@ -30,12 +22,6 @@ export default function Swiper() {
         }).catch((err) => {
             console.log('fetch error', err);     
         })
-
-        // axios.get(`http://localhost:3333/v1/tmdb/random10`)
-        // axios.get(`http://10.0.2.2:3333/v1/tmdb/random10`)
-        //     .then(response => console.log('data caca', response.data))
-        //     .catch((error) => console.log('error axios', error)
-        //     )
     }, [])
 
     // gesture event parameters (card moves on touch):
