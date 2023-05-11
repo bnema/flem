@@ -11,6 +11,7 @@ export const registerTmdbRoutes = (fastify: FastifyInstance) => {
   fastify.post<{ Body: { titles: string[] } }>(
     "/v1/tmdb/query/title",
     async (request, reply) => {
+      try {
       const { titles } = request.body;
       const results = await Promise.all(
         titles.map(async (title) => {
@@ -26,12 +27,17 @@ export const registerTmdbRoutes = (fastify: FastifyInstance) => {
       );
 
       reply.send(results.flat());
+    } catch (err) {
+      console.error(err);
+      reply.status(500).send({ error: "Something went wrong" });
     }
+  }
   );
 
-  fastify.post<{ Body: { ids: number[] } }>(
-    "/v1/tmdb/query/id",
+  fastify.post<{ Body: { ids: number[] } }>( 
+  "/v1/tmdb/query/id",
     async (request, reply) => {
+      try {
       const { ids } = request.body;
       const results = await Promise.all(
         ids.map(async (id) => {
@@ -41,7 +47,11 @@ export const registerTmdbRoutes = (fastify: FastifyInstance) => {
       );
 
       reply.send(results);
+    } catch (err) {
+      console.error(err);
+      reply.status(500).send({ error: "Something went wrong" });
     }
+  }
   );
 
 
@@ -53,7 +63,7 @@ fastify.get('/v1/tmdb/random10', async (request, reply) => {
     // Generate an array of 10 random movie IDs between the minimum and maximum values
     const randomIds = Array.from({ length: 10 }, () => Math.floor(Math.random() * (maxID - minID + 1) + minID));
 
-    // Use Promise.all to fetch the details of all 10 movies asynchronously
+    // Use Promise.all to fetch the details of all 10 movies
     const results = await Promise.all(
       randomIds.map(async (id) => {
         const details = await getMovieDetails(id);
