@@ -97559,9 +97559,9 @@ var saveMovieInFrench = async (data) => {
   await connectDB();
   await saveMovie(data, "french");
 };
-var getMovie = async (movieId) => {
+var getMovie = async (movieId, language) => {
   await connectDB();
-  const movie = await MovieModel.findOne({ id: movieId });
+  const movie = await MovieModel.findOne({ id: movieId, language });
   return movie;
 };
 
@@ -97586,6 +97586,61 @@ var checkBlacklist = async (data) => {
   return Array.from(blacklistWords);
 };
 
+// src/config/openai.ts
+var import_dotenv3 = __toESM(require_main());
+import_dotenv3.default.config();
+var OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+var OPENAI_URL = "https://api.openai.com/v1/chat/completions";
+var model2 = "gpt-3.5-turbo-0301";
+
+// src/features/openai/handlers.ts
+async function translateMovieToFrench(data) {
+  const existingMovie = await getMovie(data.id, "french");
+  if (existingMovie) {
+    console.log(`Movie ${data.id} in french already exists in the database`);
+    return existingMovie;
+  }
+  const prompt = {
+    "role": "system",
+    "content": "You are a helpful assistant translator."
+  };
+  const userContent = {
+    "role": "user",
+    "content": `Translate this JSON Movie object into French while respecting the original structure ${JSON.stringify(data)}. Please respond with a JSON-formatted structure but do not translate the keys.`
+  };
+  const body = JSON.stringify({
+    messages: [prompt, userContent],
+    model: model2
+  });
+  let attempts = 0;
+  const maxAttempts = 3;
+  while (attempts < maxAttempts) {
+    try {
+      const response = await fetch(OPENAI_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${OPENAI_API_KEY}`
+        },
+        body
+      });
+      const result = await response.json();
+      const messageContent = result.choices[0].message.content;
+      const startIndex = messageContent.indexOf("{");
+      const endIndex = messageContent.lastIndexOf("}");
+      const jsonContent = messageContent.substring(startIndex, endIndex + 1);
+      const translatedMovie = JSON.parse(jsonContent);
+      saveMovieInFrench(translatedMovie);
+      return translatedMovie;
+    } catch (error) {
+      attempts++;
+      if (attempts === maxAttempts) {
+        throw new Error(`Failed to translate movie to French after ${maxAttempts} attempts: ${error}`);
+      }
+    }
+  }
+}
+
 // src/features/tmdb/requests.ts
 var searchMoviesByTitle = async (title) => {
   const response = await fetch(
@@ -97598,7 +97653,7 @@ var searchMoviesByTitle = async (title) => {
 };
 var getMovieDetails = async (movieId, language) => {
   try {
-    const movie = await getMovie(movieId);
+    const movie = await getMovie(movieId, language);
     if (movie) {
       return movie;
     }
@@ -97662,58 +97717,14 @@ var getMoviesByGenreAndDate = async (genre, minDate, maxDate, quantity) => {
     throw new Error("Unexpected response from TMDB API");
   }
   const movies = data.results;
+  movies.forEach(async (movie) => {
+    translateMovieToFrench(movie).then((frenchMovie) => {
+    }).catch((err) => {
+      console.error(`Error translating movie: ${err}`);
+    });
+  });
   return movies.slice(0, quantity);
 };
-
-// src/config/openai.ts
-var import_dotenv3 = __toESM(require_main());
-import_dotenv3.default.config();
-var OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-var OPENAI_URL = "https://api.openai.com/v1/chat/completions";
-var model2 = "gpt-3.5-turbo-0301";
-
-// src/features/openai/handlers.ts
-async function translateMovieToFrench(data) {
-  const prompt = {
-    "role": "system",
-    "content": "You are a helpful assistant translator."
-  };
-  const userContent = {
-    "role": "user",
-    "content": `Translate this JSON Movie object into French while respecting the original structure ${JSON.stringify(data)}. Please respond with a JSON-formatted structure but do not translate the keys.`
-  };
-  const body = JSON.stringify({
-    messages: [prompt, userContent],
-    model: model2
-  });
-  let attempts = 0;
-  const maxAttempts = 3;
-  while (attempts < maxAttempts) {
-    try {
-      const response = await fetch(OPENAI_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${OPENAI_API_KEY}`
-        },
-        body
-      });
-      const result = await response.json();
-      const messageContent = result.choices[0].message.content;
-      const startIndex = messageContent.indexOf("{");
-      const endIndex = messageContent.lastIndexOf("}");
-      const jsonContent = messageContent.substring(startIndex, endIndex + 1);
-      const translatedMovie = JSON.parse(jsonContent);
-      saveMovieInFrench(translatedMovie);
-      return translatedMovie;
-    } catch (error) {
-      attempts++;
-      if (attempts === maxAttempts) {
-        throw new Error(`Failed to translate movie to French after ${maxAttempts} attempts: ${error}`);
-      }
-    }
-  }
-}
 
 // src/features/tmdb/routes.ts
 var import_console = require("console");
