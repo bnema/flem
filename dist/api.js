@@ -91203,7 +91203,6 @@ var require_blacklist = __commonJS({
         "bitch",
         "bitches",
         "bitching",
-        "bloody",
         "blowjob",
         "bollok",
         "boob",
@@ -91257,7 +91256,6 @@ var require_blacklist = __commonJS({
         "fudge packer",
         "god-damned",
         "goddamn",
-        "hell",
         "hore",
         "horny",
         "jerk-off",
@@ -96081,7 +96079,6 @@ var require_blacklist = __commonJS({
         "gomar",
         "ass-fucker",
         "gomar\xEB",
-        "trap",
         "assholes",
         "ballbag",
         "balls",
@@ -96455,7 +96452,6 @@ var require_blacklist = __commonJS({
         "porr",
         "pornografi",
         "sticka",
-        "stick",
         "pube",
         "mesar",
         "v\xE5ldta",
@@ -97183,7 +97179,6 @@ var require_blacklist = __commonJS({
         "qochish",
         "itvachcha",
         "spac",
-        "jim",
         "moyaklar",
         "tit",
         "titt",
@@ -97560,9 +97555,9 @@ var saveMovieInFrench = async (data) => {
   await connectDB();
   await saveMovie(data, "french");
 };
-var getMovie = async (movieId) => {
+var getMovie = async (movieId, language) => {
   await connectDB();
-  const movie = await MovieModel.findOne({ id: movieId });
+  const movie = await MovieModel.findOne({ id: movieId, language });
   return movie;
 };
 
@@ -97587,70 +97582,26 @@ var checkBlacklist = async (data) => {
   return Array.from(blacklistWords);
 };
 
-// src/features/tmdb/requests.ts
-var searchMoviesByTitle = async (title) => {
-  const response = await fetch(
-    `${TMDB_API_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(
-      title
-    )}`
-  );
-  const data = await response.json();
-  return data.results;
-};
-var getMovieDetails = async (movieId) => {
-  try {
-    const movie = await getMovie(movieId);
-    if (movie) {
-      return movie;
+// src/features/tmdb/movieValidator.ts
+var validateMovieData = async (data, movieId) => {
+  if (!data.id || !data.title || !data.overview || !data.poster_path || !data.genres) {
+    console.log(`Movie ${movieId} does not have an id or title or overview`);
+    return false;
+  } else if (data.adult) {
+    console.log(`Movie ${movieId} is an adult movie`);
+    return false;
+  } else {
+    const blacklistWords = await checkBlacklist(data);
+    if (blacklistWords.length > 0) {
+      console.log(
+        `Movie ${movieId} contains the following blacklisted words: ${blacklistWords.join(
+          ", "
+        )}`
+      );
+      return false;
     }
-    const response = await fetch(
-      `${TMDB_API_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&include_adult=false`
-    );
-    const data = await response.json();
-    if (!data.id || !data.title || !data.overview || !data.poster_path || !data.genres) {
-      console.log(`Movie ${movieId} does not have an id or title or overview`);
-      return;
-    } else if (data.adult) {
-      console.log(`Movie ${movieId} is an adult movie`);
-      return;
-    } else {
-      const blacklistWords = await checkBlacklist(data);
-      if (blacklistWords.length > 0) {
-        console.log(
-          `Movie ${movieId} contains the following blacklisted words: ${blacklistWords.join(
-            ", "
-          )}`
-        );
-        return;
-      }
-    }
-    await saveMovie(data);
-    return data;
-  } catch (error) {
-    console.error(error);
-    throw new Error(`Failed to get movie details for id ${movieId}`);
   }
-};
-var getMinMaxMovieID = async () => {
-  const minResponse = await fetch(
-    `${TMDB_API_URL}/discover/movie?api_key=${TMDB_API_KEY}&sort_by=popularity.asc&page=1&include_adult=false`
-  );
-  const maxResponse = await fetch(
-    `${TMDB_API_URL}/discover/movie?api_key=${TMDB_API_KEY}&sort_by=popularity.asc&page=500&include_adult=false`
-  );
-  if (!minResponse.ok || !maxResponse.ok) {
-    throw new Error(
-      `TMDB API request failed: ${minResponse.statusText}, ${maxResponse.statusText}`
-    );
-  }
-  const minData = await minResponse.json();
-  const maxData = await maxResponse.json();
-  if (!minData.results || !maxData.results) {
-    throw new Error("Unexpected response from TMDB API");
-  }
-  const minID = minData.results[0].id;
-  const maxID = maxData.results[maxData.results.length - 1].id;
-  return { minID, maxID };
+  return true;
 };
 
 // src/config/openai.ts
@@ -97662,6 +97613,11 @@ var model2 = "gpt-3.5-turbo-0301";
 
 // src/features/openai/handlers.ts
 async function translateMovieToFrench(data) {
+  const existingMovie = await getMovie(data.id, "french");
+  if (existingMovie) {
+    console.log(`Movie ${data.id} in french already exists in the database`);
+    return existingMovie;
+  }
   const prompt = {
     "role": "system",
     "content": "You are a helpful assistant translator."
@@ -97703,6 +97659,91 @@ async function translateMovieToFrench(data) {
   }
 }
 
+// src/features/tmdb/requests.ts
+var searchMoviesByTitle = async (title) => {
+  const response = await fetch(
+    `${TMDB_API_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(
+      title
+    )}`
+  );
+  const data = await response.json();
+  return data.results;
+};
+var getMovieDetails = async (movieId, language) => {
+  try {
+    const movie = await getMovie(movieId, language);
+    if (movie) {
+      return movie;
+    }
+    const response = await fetch(
+      `${TMDB_API_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&include_adult=false`
+    );
+    const data = await response.json();
+    const isValid = await validateMovieData(data, movieId);
+    if (!isValid)
+      return;
+    await saveMovie(data);
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw new Error(`Failed to get movie details for id ${movieId}`);
+  }
+};
+var getMinMaxMovieID = async () => {
+  const minResponse = await fetch(
+    `${TMDB_API_URL}/discover/movie?api_key=${TMDB_API_KEY}&sort_by=popularity.asc&page=1&include_adult=false`
+  );
+  const maxResponse = await fetch(
+    `${TMDB_API_URL}/discover/movie?api_key=${TMDB_API_KEY}&sort_by=popularity.asc&page=500&include_adult=false`
+  );
+  if (!minResponse.ok || !maxResponse.ok) {
+    throw new Error(
+      `TMDB API request failed: ${minResponse.statusText}, ${maxResponse.statusText}`
+    );
+  }
+  const minData = await minResponse.json();
+  const maxData = await maxResponse.json();
+  if (!minData.results || !maxData.results) {
+    throw new Error("Unexpected response from TMDB API");
+  }
+  const minID = minData.results[0].id;
+  const maxID = maxData.results[maxData.results.length - 1].id;
+  return { minID, maxID };
+};
+var getMoviesByGenreAndDate = async (genre, minDate, maxDate, quantity) => {
+  const minDateString = minDate.toISOString().split("T")[0];
+  const maxDateString = maxDate.toISOString().split("T")[0];
+  const response = await fetch(
+    `${TMDB_API_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genre}&primary_release_date.gte=${minDateString}&primary_release_date.lte=${maxDateString}&include_adult=false`
+  );
+  const data = await response.json();
+  if (!data.results) {
+    throw new Error("Unexpected response from TMDB API");
+  }
+  const movies = data.results.map((movie) => {
+    return {
+      ...movie,
+      genres: movie.genre_ids.map((id) => ({ id, name: "" }))
+    };
+  });
+  const validMovies = movies.filter(validateMovieData);
+  for (const movie of movies) {
+    const isValid = await validateMovieData(movie, movie.id);
+    if (isValid) {
+      validMovies.push(movie);
+    }
+    if (validMovies.length >= quantity)
+      break;
+  }
+  validMovies.forEach(async (movie) => {
+    translateMovieToFrench(movie).then((frenchMovie) => {
+    }).catch((err) => {
+      console.error(`Error translating movie: ${err}`);
+    });
+  });
+  return validMovies.slice(0, quantity);
+};
+
 // src/features/tmdb/routes.ts
 var import_console = require("console");
 var registerTmdbRoutes = (fastify2) => {
@@ -97716,7 +97757,7 @@ var registerTmdbRoutes = (fastify2) => {
             const movies = await searchMoviesByTitle(title);
             return Promise.all(
               movies.map(async (movie) => {
-                const details = await getMovieDetails(movie.id);
+                const details = await getMovieDetails(movie.id, "english");
                 return details;
               })
             );
@@ -97737,7 +97778,7 @@ var registerTmdbRoutes = (fastify2) => {
         const { ids } = request.body;
         const results = await Promise.all(
           ids.map(async (id) => {
-            const details = await getMovieDetails(id);
+            const details = await getMovieDetails(id, "english");
             return details;
           })
         );
@@ -97754,7 +97795,7 @@ var registerTmdbRoutes = (fastify2) => {
       const results = [];
       while (results.length < 10) {
         const id = Math.floor(Math.random() * (maxID - minID + 1) + minID);
-        const details = await getMovieDetails(id);
+        const details = await getMovieDetails(id, "english");
         if (details) {
           results.push(details);
         } else {
@@ -97774,6 +97815,32 @@ var registerTmdbRoutes = (fastify2) => {
       reply.status(500).send({ error: "Something went wrong" });
     }
   });
+  fastify2.get(
+    "/v1/tmdb/movies",
+    async (request, reply) => {
+      try {
+        const { genre, minDate, maxDate, language, quantity } = request.query;
+        const minDateObj = new Date(minDate);
+        const maxDateObj = new Date(maxDate);
+        const movies = await getMoviesByGenreAndDate(genre, minDateObj, maxDateObj, quantity);
+        const results = await Promise.all(
+          movies.map(async (movie) => {
+            let details;
+            if (language === "french") {
+              details = await getMovieDetails(movie.id, "french");
+            } else {
+              details = await getMovieDetails(movie.id, "english");
+            }
+            return details;
+          })
+        );
+        reply.send(results);
+      } catch (err) {
+        console.error(err);
+        reply.status(500).send({ error: "Something went wrong" });
+      }
+    }
+  );
 };
 
 // src/routes/index.ts

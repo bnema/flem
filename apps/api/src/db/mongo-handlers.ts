@@ -38,11 +38,23 @@ export const saveMovieInFrench = async (data: Movie) => {
   await saveMovie(data, 'french');
 }
 
-// Function to get movies from MongoDB
-export const getMovie = async (movieId: number) => {
+// Function to get movie from MongoDB
+export const getMovie = async (movieId: number, language: string) => {
   await connectDB();
 
-  const movie = await MovieModel.findOne({ id: movieId });
+  const movie = await MovieModel.findOne({ id: movieId, language: language });
+
 
   return movie;
+}
+
+export const getMoviesByGenreAndDateFromDB = async (genre: number, minDate: Date, maxDate: Date) => {
+  await connectDB();
+
+  const movies = await MovieModel.find({ 
+    genres: genre, 
+    release_date: { $gte: minDate, $lte: maxDate },
+  });
+
+  return movies;
 }
