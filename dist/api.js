@@ -91203,7 +91203,6 @@ var require_blacklist = __commonJS({
         "bitch",
         "bitches",
         "bitching",
-        "bloody",
         "blowjob",
         "bollok",
         "boob",
@@ -91257,7 +91256,6 @@ var require_blacklist = __commonJS({
         "fudge packer",
         "god-damned",
         "goddamn",
-        "hell",
         "hore",
         "horny",
         "jerk-off",
@@ -96081,7 +96079,6 @@ var require_blacklist = __commonJS({
         "gomar",
         "ass-fucker",
         "gomar\xEB",
-        "trap",
         "assholes",
         "ballbag",
         "balls",
@@ -96455,7 +96452,6 @@ var require_blacklist = __commonJS({
         "porr",
         "pornografi",
         "sticka",
-        "stick",
         "pube",
         "mesar",
         "v\xE5ldta",
@@ -97586,6 +97582,28 @@ var checkBlacklist = async (data) => {
   return Array.from(blacklistWords);
 };
 
+// src/features/tmdb/movieValidator.ts
+var validateMovieData = async (data, movieId) => {
+  if (!data.id || !data.title || !data.overview || !data.poster_path || !data.genres) {
+    console.log(`Movie ${movieId} does not have an id or title or overview`);
+    return false;
+  } else if (data.adult) {
+    console.log(`Movie ${movieId} is an adult movie`);
+    return false;
+  } else {
+    const blacklistWords = await checkBlacklist(data);
+    if (blacklistWords.length > 0) {
+      console.log(
+        `Movie ${movieId} contains the following blacklisted words: ${blacklistWords.join(
+          ", "
+        )}`
+      );
+      return false;
+    }
+  }
+  return true;
+};
+
 // src/config/openai.ts
 var import_dotenv3 = __toESM(require_main());
 import_dotenv3.default.config();
@@ -97661,23 +97679,9 @@ var getMovieDetails = async (movieId, language) => {
       `${TMDB_API_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&include_adult=false`
     );
     const data = await response.json();
-    if (!data.id || !data.title || !data.overview || !data.poster_path || !data.genres) {
-      console.log(`Movie ${movieId} does not have an id or title or overview`);
+    const isValid = await validateMovieData(data, movieId);
+    if (!isValid)
       return;
-    } else if (data.adult) {
-      console.log(`Movie ${movieId} is an adult movie`);
-      return;
-    } else {
-      const blacklistWords = await checkBlacklist(data);
-      if (blacklistWords.length > 0) {
-        console.log(
-          `Movie ${movieId} contains the following blacklisted words: ${blacklistWords.join(
-            ", "
-          )}`
-        );
-        return;
-      }
-    }
     await saveMovie(data);
     return data;
   } catch (error) {
@@ -97716,14 +97720,28 @@ var getMoviesByGenreAndDate = async (genre, minDate, maxDate, quantity) => {
   if (!data.results) {
     throw new Error("Unexpected response from TMDB API");
   }
-  const movies = data.results;
-  movies.forEach(async (movie) => {
+  const movies = data.results.map((movie) => {
+    return {
+      ...movie,
+      genres: movie.genre_ids.map((id) => ({ id, name: "" }))
+    };
+  });
+  const validMovies = movies.filter(validateMovieData);
+  for (const movie of movies) {
+    const isValid = await validateMovieData(movie, movie.id);
+    if (isValid) {
+      validMovies.push(movie);
+    }
+    if (validMovies.length >= quantity)
+      break;
+  }
+  validMovies.forEach(async (movie) => {
     translateMovieToFrench(movie).then((frenchMovie) => {
     }).catch((err) => {
       console.error(`Error translating movie: ${err}`);
     });
   });
-  return movies.slice(0, quantity);
+  return validMovies.slice(0, quantity);
 };
 
 // src/features/tmdb/routes.ts
