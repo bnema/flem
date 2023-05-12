@@ -1,17 +1,24 @@
-import React, { useCallback } from 'react'
-import { StyleSheet, View, Image, Text, ImageSourcePropType, Animated } from 'react-native'
+import React, { useCallback, useState } from 'react'
+import { StyleSheet, View, Image, Animated } from 'react-native'
 import { CARD, ACTION_OFFSET } from '../../utils/Params'
 import Selection from '../selection/Selection'
+import CardOverview from './CardOverview'
+import EyeButton from '../Button/EyeButton'
 
-type MoviesProps = {
-    name: string,
-    source: ImageSourcePropType,
+type TypeProps = {
+    title: string,
+    genre: string[],
+    overview: string,
+    date: string,
+    poster: string,
     isFirst: boolean,
-    swipe: any, // any ?
-    tiltSign: any, // any ?
+    swipe: any, //  ?
+    tiltSign: any, //  ?
 }
 
-export default function Card({ name, source, isFirst, swipe, tiltSign, ...rest }: MoviesProps) {
+export default function Card({ title, genre, overview, date, poster, isFirst, swipe, tiltSign, ...rest }: TypeProps) {
+
+    const [watched, setwatched] = useState(false)
 
     // card move & rotation & effect :
     // --> multiply creates a new Animated value composed from two Animated values multiplied together.
@@ -33,6 +40,12 @@ export default function Card({ name, source, isFirst, swipe, tiltSign, ...rest }
         extrapolate: 'clamp',
     })
 
+    const viewOpacity = swipe.y.interpolate({
+        inputRange: [-180, -20],
+        outputRange: [1, 0],
+        extrapolate: 'clamp',
+    })
+
     // render of YUP or NOPE choices
     const renderSelection = useCallback(() => {
         return (
@@ -43,6 +56,9 @@ export default function Card({ name, source, isFirst, swipe, tiltSign, ...rest }
                 <Animated.View style={[styles.selectionContainer, styles.nopeContainer, { opacity: nopeOpacity }]} >
                     <Selection type='NOPE' />
                 </Animated.View>
+                <Animated.View style={[styles.selectionContainer, styles.viewContainer, { opacity: viewOpacity }]} >
+                    <Selection type='VIEW' />
+                </Animated.View>
             </>
         )
     }, [])
@@ -51,26 +67,57 @@ export default function Card({ name, source, isFirst, swipe, tiltSign, ...rest }
         transform: [...swipe.getTranslateTransform(), { rotate }]
     }
 
+    // display card's overview
+    const overviewOpacity = swipe.y.interpolate({
+        inputRange: [-260, -200],
+        outputRange: [1, 0],
+        extrapolate: 'clamp',
+    })
+
+    const renderOverview = useCallback(() => {
+        return (
+            <>
+                <Animated.View style={[styles.cardOverviewContainer, { opacity: overviewOpacity }]} >
+                    <CardOverview title={title} genre={genre} overview={overview} date={date} />
+                </Animated.View>
+            </>
+        )
+    }, [])
+
+
     return (
         <Animated.View style={[styles.container, isFirst && animatedCardStyle]} {...rest}>
-            <Image source={source} style={styles.image} />
-            <Text style={styles.name} >{name}</Text>
-            {isFirst && renderSelection()}
+            <Image source={{ uri: poster }} alt={title} style={styles.image} />
+
+            {watched === false
+                ? <EyeButton onPressIn={()=> setwatched(!watched)} name={'eye-slash'} size={50} color={'#ff195e'} />
+                : <EyeButton onPressIn={()=>setwatched(!watched)} name={'eye'} size={50} color={'#00ffb7'} />
+            }
+
+            {isFirst && (
+                <>
+                    {renderSelection()}
+                    {renderOverview()}
+                </>
+            )}
         </Animated.View>
+
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
+        alignItems: 'center',
         top: 45, // check for other device ?
     },
     image: {
         width: CARD.WIDTH,
         height: CARD.HEIGHT,
         borderRadius: CARD.BORDER_RADIUS,
+        resizeMode: 'contain',
     },
-    name: {
+    title: {
         position: 'absolute',
         left: 22, // check for other device ?
         bottom: 22, // check for other device ?
@@ -90,5 +137,14 @@ const styles = StyleSheet.create({
     nopeContainer: {
         right: 45, // check for other device ?
         transform: [{ rotate: '30deg' }]
+    },
+    viewContainer: {
+        top: 300, // check for other device ?
+    },
+    cardOverviewContainer: {
+        position: 'relative',
+        zIndex: -1,
+        // top: -20,
+        bottom: 70,
     },
 })

@@ -1,0 +1,102 @@
+[
+    {
+        "date": "2009-12-15",
+        "genre": [
+            "Action",
+            "Adventure",
+            "Fantasy",
+            "Science Fiction"
+        ],
+        "id": 19995,
+        "overview": "In the 22nd century, a paraplegic Marine is dispatched to the moon Pandora on a unique mission, but becomes torn between following orders and protecting an alien civilization.",
+        "poster": "https://imaer": "https://image.tmdb.org/t/p/w500//eW250uuZW49GTJ5ZH0e3kNesWSd.jpg",
+        "title": "Zatch Bell! 101st Devil"
+    },
+    {
+        "date": "2003-07-09",
+        "genre": [
+            "Adventure",
+            "Fantasy",
+            "Action"
+        ],
+        "id": 22,
+        "overview": "Jack Sparrow, a freewheeling 18th-century pirate, quarrels with a rival pirate bent on pillaging Port Royal. When the governor's daughter is kidnapped, Sparrow decides to help the girl's love save her.",
+        "poster": "https://image.tmdb.org/t/p/w500//z8onk7LV9Mmw6zKz4hT6pzzvmvl.jpg",
+        "title": "Pirates of the Caribbean: The Curse of the Black Pearl"
+    },
+    {
+        "date": "2006-07-06",
+        "genre": [
+            "Adventure",
+            "Fantasy",
+            "Action"
+        ],
+        "id": 58,
+        "overview": "Captain Jack Sparrow works his way out of a blood debt with the ghostly Davy Jones to avoid eternal damnation.",
+        "poster": "https://image.tmdb.org/t/p/w500//uXEqmloGyP7UXAiphJUu2v2pcuE.jpg",
+        "title": "Pirates of the Caribbean: Dead Man's Chest"
+    },
+    {
+        "date": "2007-08-04",
+        "genre": [
+            "Animation",
+            "Action",
+            "Fantasy"
+        ],
+        "id": 20982,
+        "overview": "Demons that once almost destroyed the world, are revived by someone. To prevent the world from being destroyed, the demon has to be sealed and the only one who can do it is the shrine maiden Shion from the country of demons, who has two powers; one is sealing demons and the other is predicting the deaths of humans. This time Naruto's mission is to guard Shion, but she predicts Naruto's death. The only way to escape it, is to get away from Shion, which would leave her unguarded, then the demon, whose only goal is to kill Shion will do so, thus meaning the end of the world. Naruto decides to challenge this \"prediction of death.\"",
+        "poster": "https://image.tmdb.org/t/p/w500//vDkct38sSFSWJIATlfJw0l3QOIR.jpg",
+        "title": "Naruto Shippuden the Movie"
+    }
+]
+LOG  🚀 ~file: Swiper.tsx: 10 ~Swiper ~moviesData: [
+    {
+        "date": "2004-07-09",
+        "genre": [
+            "Comedy",
+            "Animation",
+            "Adventure",
+            "Action"
+        ],
+        "id": 404250,
+        "overview": "While the battle to determine the next king of the demon realm has often been fraught, the rules were always clear.  100 demon children partnered with 100 humans would challenge each other, using 100 magical books.  What none of them knew was that there was a 101st magical book, powerful enough to stop any of the others.  Gash and Kiyomaro must begin a journey that will take them into the demon realm to confront the mysteries of Gash's past.  But will they escape in time to help their friends in a battle with a seemingly unstoppable enemy?",
+        "poster": "https://image.tmdb.org/t/p/w500//eW250uuZW49GTJ5ZH0e3kNesWSd.jpg",
+        "title": "Zatch Bell! 101st Devil"
+    },
+    {
+        "date": "2003-07-09",
+        "genre": [
+            "Adventure",
+            "Fantasy",
+            "Action"
+        ],
+        "id": 22,
+        "overview": "Jack Sparrow, a freewheeling 18th-century pirate, quarrels with a rival pirate bent on pillaging Port Royal. When the governor's daughter is kidnapped, Sparrow decides to help the girl's love save her.",
+        "poster": "https://image.tmdb.org/t/p/w500//z8onk7LV9Mmw6zKz4hT6pzzvmvl.jpg",
+        "title": "Pirates of the Caribbean: The Curse of the Black Pearl"
+    },
+    {
+        "date": "2006-07-06",
+        "genre": [
+            "Adventure",
+            "Fantasy",
+            "Action"
+        ],
+        "id": 58,
+        "overview": "Captain Jack Sparrow works his way out of a blood debt with the ghostly Davy Jones to avoid eternal damnation.",
+        "poster": "https://image.tmdb.org/t/p/w500//uXEqmloGyP7UXAiphJUu2v2pcuE.jpg",
+        "title": "Pirates of the Caribbean: Dead Man's Chest"
+    },
+    {
+        "date": "2007-08-04",
+        "genre": [
+            "Animation",
+            "Action",
+            "Fantasy"
+        ],
+        "id": 20982,
+        "overview": "Demons that once almost destroyed the world, are revived by someone. To prevent the world from being destroyed, the demon has to be sealed and the only one who can do it is the shrine maiden Shion from the country of demons, who has two powers; one is sealing demons and the other is predicting the deaths of humans. This time Naruto's mission is to guard Shion, but she predicts Naruto's death. The only way to escape it, is to get away from Shion, which would leave her unguarded, then the demon, whose only goal is to kill Shion will do so, thus meaning the end of the world. Naruto decides to challenge this \"prediction of death.\"",
+        "poster": "https://image.tmdb.org/t/p/w500//vDkct38sSFSWJIATlfJw0l3QOIR.jpg",
+        "title": "Naruto Shippuden the Movie"
+    }
+]

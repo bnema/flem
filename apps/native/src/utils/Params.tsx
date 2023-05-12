@@ -11,6 +11,7 @@ export const CARD = {
 export const COLORS = {
     YUP: '#00ffb7',
     NOPE: '#ff195e',
+    VIEW: '#fdff78',
 }
 
 export const ACTION_OFFSET = 100
