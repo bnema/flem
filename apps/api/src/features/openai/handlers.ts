@@ -1,9 +1,15 @@
 import { log } from "console";
 import { OPENAI_API_KEY, OPENAI_URL, model } from "../../config/openai";
 import { Movie } from "@flem/types";
-import { saveMovieInFrench } from "../../db/mongo-handlers";
+import { saveMovieInFrench, getMovie } from "../../db/mongo-handlers";
 
 export async function translateMovieToFrench(data: Movie) {
+  // Check if the movie is already in the database to avoid unnecessary API calls
+  const existingMovie = await getMovie(data.id, 'french');
+  if (existingMovie) {
+    console.log(`Movie ${data.id} in french already exists in the database`);
+    return existingMovie;
+  }
   const prompt = {
     'role': 'system',
     'content': 'You are a helpful assistant translator.',
@@ -38,6 +44,8 @@ export async function translateMovieToFrench(data: Movie) {
       const endIndex = messageContent.lastIndexOf('}');
       const jsonContent = messageContent.substring(startIndex, endIndex + 1);
       const translatedMovie = JSON.parse(jsonContent);
+
+
       saveMovieInFrench(translatedMovie);
       return translatedMovie;
     } catch (error) {

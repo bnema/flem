@@ -3,6 +3,8 @@ import { TMDB_API_KEY, TMDB_API_URL } from "../../config";
 import { saveMovie, getMovie } from "../../db/mongo-handlers";
 import { checkBlacklist } from "../../config/filters";
 import { Movie } from "@flem/types";
+import { translateMovieToFrench } from "../openai/handlers";
+import { log } from "console";
 
 export const searchMoviesByTitle = async (title: string) => {
   const response = await fetch(
@@ -18,7 +20,7 @@ export const searchMoviesByTitle = async (title: string) => {
 export const getMovieDetails = async (movieId: number, language: string) => {
   try {
     // Check if the movie is already in the database to avoid unnecessary API calls
-    const movie = await getMovie(movieId);
+    const movie = await getMovie(movieId, language);
     if (movie) {
       return movie;
     }
@@ -118,6 +120,16 @@ export const getMoviesByGenreAndDate = async (
   // We validate the data with the type Movie
   const movies: Movie[] = data.results;
 
+  // for each movie, we translate in French in the background
+  movies.forEach(async (movie) => {
+      translateMovieToFrench(movie)
+        .then(frenchMovie => {
+
+        })
+        .catch(err => {
+          console.error(`Error translating movie: ${err}`);
+        });
+    });
   // We return a slice of the array determined by the quantity parameter
   return movies.slice(0, quantity);
 
