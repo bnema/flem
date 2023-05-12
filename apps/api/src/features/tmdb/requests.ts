@@ -1,7 +1,11 @@
 // Path: apps\api\features\tmdb\requests.tsx
 import { TMDB_API_KEY, TMDB_API_URL } from "../../config";
-import { saveMovie, getMovie, getMoviesByGenreAndDateFromDB } from "../../db/mongo-handlers";
-import { checkBlacklist } from "../../config/filters";
+import {
+  saveMovie,
+  getMovie,
+  getMoviesByGenreAndDateFromDB,
+} from "../../db/mongo-handlers";
+import { validateMovieData } from "./movieValidator";
 import { Movie } from "@flem/types";
 import { translateMovieToFrench } from "../openai/handlers";
 
@@ -30,33 +34,8 @@ export const getMovieDetails = async (movieId: number, language: string) => {
 
     const data = await response.json();
 
-    // If the movie does not have an id, title, overview or poster_path, we do not save or return the movie
-    if (
-      !data.id ||
-      !data.title ||
-      !data.overview ||
-      !data.poster_path ||
-      !data.genres
-    ) {
-      console.log(`Movie ${movieId} does not have an id or title or overview`);
-      return;
-    } else if (data.adult) {
-      console.log(`Movie ${movieId} is an adult movie`);
-      return;
-    } else {
-      // Pass the data to the blacklist filter function checkBlacklist
-      const blacklistWords = await checkBlacklist(data);
-
-      // If the blacklist filter is not empty, then we do not save or return the movie
-      if (blacklistWords.length > 0) {
-        console.log(
-          `Movie ${movieId} contains the following blacklisted words: ${blacklistWords.join(
-            ", "
-          )}`
-        );
-        return;
-      }
-    }
+    const isValid = await validateMovieData(data, movieId);
+    if (!isValid) return;
 
     await saveMovie(data);
 
@@ -97,50 +76,61 @@ export const getMinMaxMovieID = async () => {
   return { minID, maxID };
 };
 
-  // Create getMoviesByGenreAndDate(genre, minDate, maxDate, quantity);
 export const getMoviesByGenreAndDate = async (
   genre: number,
   minDate: Date,
   maxDate: Date,
   quantity: number
 ) => {
+  // Convert minimum and maximum date to string format
   const minDateString = minDate.toISOString().split("T")[0];
   const maxDateString = maxDate.toISOString().split("T")[0];
 
-  // Before we fetch we check if the movies are already in the database to avoid unnecessary API calls
-  let moviesAlreadyExists = await getMoviesByGenreAndDateFromDB(genre, minDate, maxDate);
-
-  // If the movies are already in the database, we return them
-
-  if (moviesAlreadyExists.length >= quantity) {
-    console.log(`Returning ${moviesAlreadyExists.length} movies from the database`);
-    return moviesAlreadyExists.slice(0, quantity);
-  }
-
+  // Fetch movies from TMDB API based on the provided parameters
   const response = await fetch(
     `${TMDB_API_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genre}&primary_release_date.gte=${minDateString}&primary_release_date.lte=${maxDateString}&include_adult=false`
   );
 
+  // Parse the response data as JSON
   const data = await response.json();
+
+  // Check if the response contains results
   if (!data.results) {
     throw new Error("Unexpected response from TMDB API");
   }
-  // Data results is an array of Movie objects
-  // We validate the data with the type Movie
-  const movies: Movie[] = data.results;
 
-  // for each movie, we translate in French in the background
-  movies.forEach(async (movie) => {
-      translateMovieToFrench(movie)
-        .then(frenchMovie => {
+  // Map the fetched movie data to the Movie type
+  const movies: Movie[] = data.results.map((movie: any) => {
+    return {
+      ...movie,
+      genres: movie.genre_ids.map((id: number) => ({ id, name: "" })),
+    };
+  });
 
-        })
-        .catch(err => {
-          console.error(`Error translating movie: ${err}`);
-        });
-    });
-  // We return a slice of the array determined by the quantity parameter
-  return movies.slice(0, quantity);
+  // Filter movies based on validateMovieData function
+  const validMovies = movies.filter(validateMovieData);
 
+  // Iterate over the movies to perform additional validation
+  for (const movie of movies) {
+    const isValid = await validateMovieData(movie, movie.id);
+    if (isValid) {
+      validMovies.push(movie);
+    }
+    // Stop filtering when we have enough valid movies
+    if (validMovies.length >= quantity) break;
+  }
 
+  // Translate each valid movie to French in the background
+  validMovies.forEach(async (movie) => {
+    translateMovieToFrench(movie)
+      .then((frenchMovie) => {
+        // Do something with the translated movie if needed
+      })
+      .catch((err) => {
+        console.error(`Error translating movie: ${err}`);
+      });
+  });
+
+  // Return a slice of the validMovies array based on the quantity parameter
+  return validMovies.slice(0, quantity);
 };
