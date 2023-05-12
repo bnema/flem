@@ -1,10 +1,9 @@
 // Path: apps\api\features\tmdb\requests.tsx
 import { TMDB_API_KEY, TMDB_API_URL } from "../../config";
-import { saveMovie, getMovie } from "../../db/mongo-handlers";
+import { saveMovie, getMovie, getMoviesByGenreAndDateFromDB } from "../../db/mongo-handlers";
 import { checkBlacklist } from "../../config/filters";
 import { Movie } from "@flem/types";
 import { translateMovieToFrench } from "../openai/handlers";
-import { log } from "console";
 
 export const searchMoviesByTitle = async (title: string) => {
   const response = await fetch(
@@ -107,6 +106,16 @@ export const getMoviesByGenreAndDate = async (
 ) => {
   const minDateString = minDate.toISOString().split("T")[0];
   const maxDateString = maxDate.toISOString().split("T")[0];
+
+  // Before we fetch we check if the movies are already in the database to avoid unnecessary API calls
+  let moviesAlreadyExists = await getMoviesByGenreAndDateFromDB(genre, minDate, maxDate);
+
+  // If the movies are already in the database, we return them
+
+  if (moviesAlreadyExists.length >= quantity) {
+    console.log(`Returning ${moviesAlreadyExists.length} movies from the database`);
+    return moviesAlreadyExists.slice(0, quantity);
+  }
 
   const response = await fetch(
     `${TMDB_API_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genre}&primary_release_date.gte=${minDateString}&primary_release_date.lte=${maxDateString}&include_adult=false`

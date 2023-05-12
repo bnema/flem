@@ -48,3 +48,13 @@ export const getMovie = async (movieId: number, language: string) => {
   return movie;
 }
 
+export const getMoviesByGenreAndDateFromDB = async (genre: number, minDate: Date, maxDate: Date) => {
+  await connectDB();
+
+  const movies = await MovieModel.find({ 
+    genres: genre, 
+    release_date: { $gte: minDate, $lte: maxDate },
+  });
+
+  return movies;
+}
