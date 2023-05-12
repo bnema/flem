@@ -4,6 +4,7 @@ import {
   searchMoviesByTitle,
   getMovieDetails,
   getMinMaxMovieID,
+  getMoviesByGenreAndDate
 } from "./requests";
 import { Movie } from "@flem/types";
 import { translateMovieToFrench } from "../openai/handlers";
@@ -22,7 +23,7 @@ export const registerTmdbRoutes = (fastify: FastifyInstance) => {
 
             return Promise.all(
               movies.map(async (movie: Movie) => {
-                const details = await getMovieDetails(movie.id);
+                const details = await getMovieDetails(movie.id, "english");
                 return details;
               })
             );
@@ -45,7 +46,7 @@ export const registerTmdbRoutes = (fastify: FastifyInstance) => {
         const { ids } = request.body;
         const results = await Promise.all(
           ids.map(async (id) => {
-            const details = await getMovieDetails(id);
+            const details = await getMovieDetails(id, "english");
             return details;
           })
         );
@@ -65,7 +66,7 @@ fastify.get("/v1/tmdb/random10", async (request, reply) => {
 
     while (results.length < 10) {
       const id = Math.floor(Math.random() * (maxID - minID + 1) + minID);
-      const details = await getMovieDetails(id);
+      const details = await getMovieDetails(id, "english");
 
       // If 'details' is not undefined, push it to the results array
       if (details) {
@@ -92,4 +93,40 @@ fastify.get("/v1/tmdb/random10", async (request, reply) => {
     reply.status(500).send({ error: "Something went wrong" });
   }
 });
+
+// Dynamic url to select a genre and then a date range and return X quantity of movies
+fastify.get<{ Querystring: { genre: number; minDate: string; maxDate: string; language: string; quantity: number } }>(
+  "/v1/tmdb/movies",
+  async (request, reply) => {
+    try {
+      const { genre, minDate, maxDate, language, quantity } = request.query;
+
+      // Convert date strings to Date objects
+      const minDateObj = new Date(minDate);
+      const maxDateObj = new Date(maxDate);
+
+      const movies = await getMoviesByGenreAndDate(genre, minDateObj, maxDateObj, quantity);
+
+
+      const results = await Promise.all(
+        movies.map(async (movie: Movie) => {
+          let details;
+          if (language === 'french') {
+            details = await getMovieDetails(movie.id, 'french');
+          } else {
+            details = await getMovieDetails(movie.id, 'english');
+          }
+          return details;
+        })
+      );
+
+      reply.send(results);
+    } catch (err) {
+      console.error(err);
+      reply.status(500).send({ error: "Something went wrong" });
+    }
+  }
+);
+
+
 };

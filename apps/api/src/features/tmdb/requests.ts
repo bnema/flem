@@ -2,6 +2,7 @@
 import { TMDB_API_KEY, TMDB_API_URL } from "../../config";
 import { saveMovie, getMovie } from "../../db/mongo-handlers";
 import { checkBlacklist } from "../../config/filters";
+import { Movie } from "@flem/types";
 
 export const searchMoviesByTitle = async (title: string) => {
   const response = await fetch(
@@ -14,7 +15,7 @@ export const searchMoviesByTitle = async (title: string) => {
   return data.results;
 };
 
-export const getMovieDetails = async (movieId: number) => {
+export const getMovieDetails = async (movieId: number, language: string) => {
   try {
     // Check if the movie is already in the database to avoid unnecessary API calls
     const movie = await getMovie(movieId);
@@ -29,7 +30,13 @@ export const getMovieDetails = async (movieId: number) => {
     const data = await response.json();
 
     // If the movie does not have an id, title, overview or poster_path, we do not save or return the movie
-    if (!data.id || !data.title || !data.overview || !data.poster_path || !data.genres) {
+    if (
+      !data.id ||
+      !data.title ||
+      !data.overview ||
+      !data.poster_path ||
+      !data.genres
+    ) {
       console.log(`Movie ${movieId} does not have an id or title or overview`);
       return;
     } else if (data.adult) {
@@ -75,20 +82,44 @@ export const getMinMaxMovieID = async () => {
       `TMDB API request failed: ${minResponse.statusText}, ${maxResponse.statusText}`
     );
   }
-
   // Parse the response data into JSON format
   const minData = await minResponse.json();
   const maxData = await maxResponse.json();
-
   // If either of the responses did not contain the expected 'results' field, throw an error
   if (!minData.results || !maxData.results) {
     throw new Error("Unexpected response from TMDB API");
   }
-
   // Get the minimum and maximum movie IDs from the response data
   const minID = minData.results[0].id;
   const maxID = maxData.results[maxData.results.length - 1].id;
-
   // Return an object containing the minimum and maximum IDs
   return { minID, maxID };
+};
+
+  // Create getMoviesByGenreAndDate(genre, minDate, maxDate, quantity);
+export const getMoviesByGenreAndDate = async (
+  genre: number,
+  minDate: Date,
+  maxDate: Date,
+  quantity: number
+) => {
+  const minDateString = minDate.toISOString().split("T")[0];
+  const maxDateString = maxDate.toISOString().split("T")[0];
+
+  const response = await fetch(
+    `${TMDB_API_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genre}&primary_release_date.gte=${minDateString}&primary_release_date.lte=${maxDateString}&include_adult=false`
+  );
+
+  const data = await response.json();
+  if (!data.results) {
+    throw new Error("Unexpected response from TMDB API");
+  }
+  // Data results is an array of Movie objects
+  // We validate the data with the type Movie
+  const movies: Movie[] = data.results;
+
+  // We return a slice of the array determined by the quantity parameter
+  return movies.slice(0, quantity);
+
+
 };

@@ -97183,7 +97183,6 @@ var require_blacklist = __commonJS({
         "qochish",
         "itvachcha",
         "spac",
-        "jim",
         "moyaklar",
         "tit",
         "titt",
@@ -97597,7 +97596,7 @@ var searchMoviesByTitle = async (title) => {
   const data = await response.json();
   return data.results;
 };
-var getMovieDetails = async (movieId) => {
+var getMovieDetails = async (movieId, language) => {
   try {
     const movie = await getMovie(movieId);
     if (movie) {
@@ -97651,6 +97650,19 @@ var getMinMaxMovieID = async () => {
   const minID = minData.results[0].id;
   const maxID = maxData.results[maxData.results.length - 1].id;
   return { minID, maxID };
+};
+var getMoviesByGenreAndDate = async (genre, minDate, maxDate, quantity) => {
+  const minDateString = minDate.toISOString().split("T")[0];
+  const maxDateString = maxDate.toISOString().split("T")[0];
+  const response = await fetch(
+    `${TMDB_API_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genre}&primary_release_date.gte=${minDateString}&primary_release_date.lte=${maxDateString}&include_adult=false`
+  );
+  const data = await response.json();
+  if (!data.results) {
+    throw new Error("Unexpected response from TMDB API");
+  }
+  const movies = data.results;
+  return movies.slice(0, quantity);
 };
 
 // src/config/openai.ts
@@ -97716,7 +97728,7 @@ var registerTmdbRoutes = (fastify2) => {
             const movies = await searchMoviesByTitle(title);
             return Promise.all(
               movies.map(async (movie) => {
-                const details = await getMovieDetails(movie.id);
+                const details = await getMovieDetails(movie.id, "english");
                 return details;
               })
             );
@@ -97737,7 +97749,7 @@ var registerTmdbRoutes = (fastify2) => {
         const { ids } = request.body;
         const results = await Promise.all(
           ids.map(async (id) => {
-            const details = await getMovieDetails(id);
+            const details = await getMovieDetails(id, "english");
             return details;
           })
         );
@@ -97754,7 +97766,7 @@ var registerTmdbRoutes = (fastify2) => {
       const results = [];
       while (results.length < 10) {
         const id = Math.floor(Math.random() * (maxID - minID + 1) + minID);
-        const details = await getMovieDetails(id);
+        const details = await getMovieDetails(id, "english");
         if (details) {
           results.push(details);
         } else {
@@ -97774,6 +97786,32 @@ var registerTmdbRoutes = (fastify2) => {
       reply.status(500).send({ error: "Something went wrong" });
     }
   });
+  fastify2.get(
+    "/v1/tmdb/movies",
+    async (request, reply) => {
+      try {
+        const { genre, minDate, maxDate, language, quantity } = request.query;
+        const minDateObj = new Date(minDate);
+        const maxDateObj = new Date(maxDate);
+        const movies = await getMoviesByGenreAndDate(genre, minDateObj, maxDateObj, quantity);
+        const results = await Promise.all(
+          movies.map(async (movie) => {
+            let details;
+            if (language === "french") {
+              details = await getMovieDetails(movie.id, "french");
+            } else {
+              details = await getMovieDetails(movie.id, "english");
+            }
+            return details;
+          })
+        );
+        reply.send(results);
+      } catch (err) {
+        console.error(err);
+        reply.status(500).send({ error: "Something went wrong" });
+      }
+    }
+  );
 };
 
 // src/routes/index.ts
