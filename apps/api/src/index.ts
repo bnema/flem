@@ -1,6 +1,8 @@
 import { createServer } from "./server";
 import { registerRoutes } from "./routes";
 import { AddressInfo } from "net";
+import { pocketBaseService } from "./db/pocketbase-handlers";
+import { get } from "http";
 
 const fastify = createServer();
 registerRoutes(fastify);
@@ -16,6 +18,8 @@ const start = async () => {
     } else {
       console.error("Failed to get the server address: address is null.");
     }
+    const users = await pocketBaseService.getAllUsers();
+console.log(users);
   } catch (err) {
     console.error(err);
   }
