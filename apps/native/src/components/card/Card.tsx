@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react'
 import { StyleSheet, View, Image, Animated } from 'react-native'
-import { CARD, ACTION_OFFSET } from '../../utils/Params'
+import { CARD, COLORS, ACTION_OFFSET } from '../../utils/Params'
 import Selection from '../selection/Selection'
 import CardOverview from './CardOverview'
 import EyeButton from '../Button/EyeButton'
@@ -89,9 +89,9 @@ export default function Card({ title, genre, overview, date, poster, isFirst, sw
         <Animated.View style={[styles.container, isFirst && animatedCardStyle]} {...rest}>
             <Image source={{ uri: poster }} alt={title} style={styles.image} />
 
-            {watched === false
-                ? <EyeButton onPressIn={()=> setwatched(!watched)} name={'eye-slash'} size={50} color={'#ff195e'} />
-                : <EyeButton onPressIn={()=>setwatched(!watched)} name={'eye'} size={50} color={'#00ffb7'} />
+            {!watched
+                ? <EyeButton onPressIn={()=> setwatched(!watched)} name={'eye-slash'} size={35} color={COLORS.ICON} />
+                : <EyeButton onPressIn={()=>setwatched(!watched)} name={'eye'} size={35} color={COLORS.YUP} />
             }
 
             {isFirst && (
@@ -144,7 +144,6 @@ const styles = StyleSheet.create({
     cardOverviewContainer: {
         position: 'relative',
         zIndex: -1,
-        // top: -20,
-        bottom: 70,
+        bottom: 80,
     },
 })

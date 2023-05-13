@@ -9,9 +9,13 @@ export const CARD = {
 }
 
 export const COLORS = {
+    BACKGROUND: '#25224f',
+    UI: '#15132e',
+    ICON: '#a8a0ff',
+    BUTTON: '#9288fc',
     YUP: '#00ffb7',
     NOPE: '#ff195e',
-    VIEW: '#fdff78',
+    VIEW: '#d6d1ff',
 }
 
 export const ACTION_OFFSET = 100
