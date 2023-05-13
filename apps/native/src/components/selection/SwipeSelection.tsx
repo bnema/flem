@@ -6,7 +6,7 @@ type SelectionProps = {
     type: string,
 }
 
-export default function Selection({ type }: SelectionProps) {
+export default function SwipeSelection({ type }: SelectionProps) {
     const color = COLORS[type]
 
     return (

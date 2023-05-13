@@ -1,18 +1,19 @@
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View } from "react-native"
+import { COLORS } from "../utils/Params"
 
 export default function MySelection() {
     return (
         <View style={styles.container}>
-            <Text>pipipopo</Text>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        // flex: 1,
+        flex: 1,
         // flexDirection: "column",
         // justifyContent: 'center',
         // alignItems: 'center',
+        backgroundColor: COLORS.BACKGROUND,
     }
 })

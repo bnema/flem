@@ -19,7 +19,8 @@ export default function Swiper() {
                 const moviesData = movies.map(movie => {
                     const poster = `https://image.tmdb.org/t/p/w500/${movie.poster_path}` //path for poster
                     const genre = movie.genres.map(genre => genre.name) // extract 'genres' and put them in array
-                    return { id: movie.id, title: movie.title, genre, overview: movie.overview, date: movie.release_date, poster }
+                    const genreID = movie.genres.map(genre => genre.id) // extract 'genres ids' and put them in array
+                    return { id: movie.id, title: movie.title, genre, genreID, overview: movie.overview, date: movie.release_date, poster }
                 })
 
                 setMoviesData(moviesData)

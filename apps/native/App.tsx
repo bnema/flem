@@ -5,6 +5,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import { COLORS } from './src/utils/Params'
 import Discover from './src/screens/Discover'
 import MySelection from './src/screens/MySelection'
+import Categories from './src/screens/Categories'
 
 const Tab = createBottomTabNavigator()
 
@@ -35,11 +36,12 @@ export default function App() {
           },
           headerShown: false,
         })}>
+          <Tab.Screen name='Categories_test' component={Categories} />
           <Tab.Screen name='Discover' component={Discover} />
           <Tab.Screen name='MySelection' component={MySelection} />
         </Tab.Navigator>
       </NavigationContainer>
-      <StatusBar style='auto' />
+      <StatusBar translucent={true} backgroundColor="transparent" />
     </>
   )
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, View, Text } from 'react-native'
-import { CARD } from '../../utils/Params'
+import { CARD, COLORS } from '../../utils/Params'
 
 type MoviesProps = {
     title: string,
@@ -26,26 +26,28 @@ const styles = StyleSheet.create({
         height: 280,
         borderBottomLeftRadius: CARD.BORDER_RADIUS,
         borderBottomRightRadius: CARD.BORDER_RADIUS,
-        backgroundColor: '#fff',
+        backgroundColor: '#e9e6ff',
         borderWidth: 6,
-        borderColor: '#000',
+        borderColor: COLORS.UI,
         paddingHorizontal: 20,
         paddingVertical: 40,
     },
     title: {
         fontSize: 20,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color: COLORS.UI,
     },
     genre: {
         fontWeight: '300',
-        color: '#808080',
+        color: COLORS.BACKGROUND,
     },
     overview: {
         fontStyle: 'italic',
         marginVertical: 2,
+        color: COLORS.UI,
     },
     date: {
         fontWeight: '300',
-        color: '#808080',
+        color: COLORS.BACKGROUND,
     }
 })

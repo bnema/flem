@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react'
 import { StyleSheet, View, Image, Animated } from 'react-native'
 import { CARD, COLORS, ACTION_OFFSET } from '../../utils/Params'
-import Selection from '../selection/Selection'
+import SwipeSelection from '../selection/SwipeSelection'
 import CardOverview from './CardOverview'
-import EyeButton from '../Button/EyeButton'
+import EyeButton from '../buttons/EyeButton'
 
 type TypeProps = {
     title: string,
@@ -47,17 +47,17 @@ export default function Card({ title, genre, overview, date, poster, isFirst, sw
     })
 
     // render of YUP or NOPE choices
-    const renderSelection = useCallback(() => {
+    const renderSwipeSelection = useCallback(() => {
         return (
             <>
-                <Animated.View style={[styles.selectionContainer, styles.yupContainer, { opacity: yupOpacity }]} >
-                    <Selection type='YUP' />
+                <Animated.View style={[styles.SwipeSelectionContainer, styles.yupContainer, { opacity: yupOpacity }]} >
+                    <SwipeSelection type='YUP' />
                 </Animated.View>
-                <Animated.View style={[styles.selectionContainer, styles.nopeContainer, { opacity: nopeOpacity }]} >
-                    <Selection type='NOPE' />
+                <Animated.View style={[styles.SwipeSelectionContainer, styles.nopeContainer, { opacity: nopeOpacity }]} >
+                    <SwipeSelection type='NOPE' />
                 </Animated.View>
-                <Animated.View style={[styles.selectionContainer, styles.viewContainer, { opacity: viewOpacity }]} >
-                    <Selection type='VIEW' />
+                <Animated.View style={[styles.SwipeSelectionContainer, styles.viewContainer, { opacity: viewOpacity }]} >
+                    <SwipeSelection type='VIEW' />
                 </Animated.View>
             </>
         )
@@ -90,13 +90,13 @@ export default function Card({ title, genre, overview, date, poster, isFirst, sw
             <Image source={{ uri: poster }} alt={title} style={styles.image} />
 
             {!watched
-                ? <EyeButton onPressIn={()=> setwatched(!watched)} name={'eye-slash'} size={35} color={COLORS.ICON} />
-                : <EyeButton onPressIn={()=>setwatched(!watched)} name={'eye'} size={35} color={COLORS.YUP} />
+                ? <EyeButton onPressIn={() => setwatched(!watched)} name={'eye-slash'} size={35} color={COLORS.ICON} />
+                : <EyeButton onPressIn={() => setwatched(!watched)} name={'eye'} size={35} color={COLORS.YUP} />
             }
 
             {isFirst && (
                 <>
-                    {renderSelection()}
+                    {renderSwipeSelection()}
                     {renderOverview()}
                 </>
             )}
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
         color: '#fff',
 
     },
-    selectionContainer: {
+    SwipeSelectionContainer: {
         position: 'absolute',
         top: 100, // check for other device ?
     },

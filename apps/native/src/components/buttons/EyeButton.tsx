@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react'
-import { StyleSheet, View, Pressable, Animated } from 'react-native'
+import { StyleSheet, Pressable, Animated } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import { COLORS } from '../../utils/Params'
 
@@ -12,9 +12,10 @@ type TypeProps = {
 }
 
 export default function EyeButton({ onPressIn, name, size, color }: TypeProps) {
-
-    const scale = useRef(new Animated.Value(1)).current
+    
     const [buttonColor, setButtonColor] = useState(false)
+    
+    const scale = useRef(new Animated.Value(1)).current
 
     const AnimatedScale = useCallback((newValue) => {
         Animated.spring(scale, {
