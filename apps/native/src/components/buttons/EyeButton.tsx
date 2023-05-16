@@ -12,12 +12,12 @@ type TypeProps = {
 }
 
 export default function EyeButton({ onPressIn, name, size, color }: TypeProps) {
-    
+
     const [buttonColor, setButtonColor] = useState(false)
-    
+
     const scale = useRef(new Animated.Value(1)).current
 
-    const AnimatedScale = useCallback((newValue) => {
+    const AnimatedScale = useCallback((newValue: number) => {
         Animated.spring(scale, {
             toValue: newValue,
             friction: 4,

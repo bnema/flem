@@ -2,11 +2,17 @@ import React from 'react'
 import { StyleSheet, View, Text } from 'react-native'
 import { COLORS } from '../../utils/Params'
 
-type SelectionProps = {
-    type: string,
+type Colors = {
+    BACKGROUND: string;
+    UI: string;
+    ICON: string;
+    BUTTON: string;
+    YUP: string;
+    NOPE: string;
+    VIEW: string;
 }
 
-export default function SwipeSelection({ type }: SelectionProps) {
+export default function SwipeSelection({ type }: { type: keyof Colors }) {
     const color = COLORS[type]
 
     return (

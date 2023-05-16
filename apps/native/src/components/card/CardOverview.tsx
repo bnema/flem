@@ -2,14 +2,14 @@ import React from 'react'
 import { StyleSheet, View, Text } from 'react-native'
 import { CARD, COLORS } from '../../utils/Params'
 
-type MoviesProps = {
+type TypeProps = {
     title: string,
     genre: string[],
     overview: string,
     date: string,
 }
 
-export default function CardOverview({ title, genre, overview, date, }: MoviesProps) {
+export default function CardOverview({ title, genre, overview, date, }: TypeProps) {
     return (
         <View style={styles.container} >
             <Text style={styles.title}>{title}</Text>
