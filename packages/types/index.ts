@@ -45,3 +45,17 @@ export type Movie = {
   vote_average: number;
   vote_count: number;
 };
+
+export type GPTPrompt = {
+  role: string;
+  content: string;
+};
+
+export type GPTResponse = {
+  choices: {
+    message: {
+      content: string
+    }
+  }[]
+};
+

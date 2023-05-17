@@ -3,6 +3,10 @@ import { registerRoutes } from "./routes";
 import { AddressInfo } from "net";
 
 const fastify = createServer();
+// increase the timeout to 2mins
+fastify.server.keepAliveTimeout = 120000; // keep-alive timeout
+fastify.server.timeout = 120000; // regular connection timeout
+
 registerRoutes(fastify);
 
 const start = async () => {

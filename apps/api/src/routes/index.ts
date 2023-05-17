@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { allowedOrigins } from "../config";
 import { publicOriginCheck, privateOriginCheck } from "../middlewares";
 import { registerTmdbRoutes } from '../features/tmdb/routes';
+import { registerAIRoutes } from "./ai";
 export const registerRoutes = (fastify: FastifyInstance) => {
   // Define route for health checks
   fastify.get("/v1/health", async (request, reply) => {
@@ -47,4 +48,5 @@ export const registerRoutes = (fastify: FastifyInstance) => {
   );
 
   registerTmdbRoutes(fastify);
+  registerAIRoutes(fastify);
 };
