@@ -23,7 +23,8 @@ export const saveMovie = async (data: Movie, language: string ='english') => {
     spoken_languages: data.spoken_languages,
     vote_average: data.vote_average,
     poster_path: data.poster_path,
-    language: language,  // Add this line to set the language of the movie data
+    director: data.director,
+    language: language, 
   });
 
   await movie.save();
