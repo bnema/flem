@@ -1,4 +1,6 @@
+import PocketBase from 'pocketbase';
 // Tous les types de données dont le front et le back ont besoin
+
 
 // TMDB Movie type
 export type Movie = {
@@ -59,3 +61,27 @@ export type GPTResponse = {
   }[]
 };
 
+export type PocketBaseInstance = PocketBase;
+
+export interface SummaryItemMovie {
+  id: number;
+  title: string;
+  release_date: string;
+  genres: { id: number; name: string }[];
+}
+
+export type TranslationResponse = {
+  id: string;
+  object: string;
+  created: number;
+  model: string;
+  choices: [
+    {
+      text: string;
+      index: number;
+      logprobs: null;
+      finish_reason: string;
+      json: any;
+    }
+  ];
+};
