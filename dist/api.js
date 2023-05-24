@@ -25,9 +25,9 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// node_modules/reusify/reusify.js
+// ../../node_modules/reusify/reusify.js
 var require_reusify = __commonJS({
-  "node_modules/reusify/reusify.js"(exports, module2) {
+  "../../node_modules/reusify/reusify.js"(exports, module2) {
     "use strict";
     function reusify(Constructor) {
       var head = new Constructor();
@@ -56,9 +56,9 @@ var require_reusify = __commonJS({
   }
 });
 
-// node_modules/fastq/queue.js
+// ../../node_modules/fastq/queue.js
 var require_queue = __commonJS({
-  "node_modules/fastq/queue.js"(exports, module2) {
+  "../../node_modules/fastq/queue.js"(exports, module2) {
     "use strict";
     var reusify = require_reusify();
     function fastqueue(context, worker, concurrency) {
@@ -16754,9 +16754,9 @@ var require_forwarded = __commonJS({
   }
 });
 
-// node_modules/ipaddr.js/lib/ipaddr.js
+// ../../node_modules/ipaddr.js/lib/ipaddr.js
 var require_ipaddr = __commonJS({
-  "node_modules/ipaddr.js/lib/ipaddr.js"(exports, module2) {
+  "../../node_modules/ipaddr.js/lib/ipaddr.js"(exports, module2) {
     (function() {
       var expandIPv6, ipaddr, ipv4Part, ipv4Regexes, ipv6Part, ipv6Regexes, matchCIDR, root, zoneIndex;
       ipaddr = {};
@@ -90353,7 +90353,6 @@ var require_blacklist = __commonJS({
         "\u0443\u0430\u043D",
         "\u0432\u0430\u043D\u043A",
         "\u043A\u0443\u0440\u0432\u0430",
-        "x \u043E\u0446\u0435\u043D\u0435\u043D",
         "\u0445\u0445\u0445"
       ],
       ca: [
@@ -90434,7 +90433,6 @@ var require_blacklist = __commonJS({
         "masoquista",
         "masturbarse",
         "puta mare",
-        "nazi",
         "nigger",
         "negres",
         "orgasim",
@@ -90710,7 +90708,6 @@ var require_blacklist = __commonJS({
         "masochist",
         "masturbate",
         "mam fucker",
-        "nazi",
         "nigger",
         "nigwyr",
         "orgasim",
@@ -90856,7 +90853,6 @@ var require_blacklist = __commonJS({
         "masochist",
         "onanere",
         "mor fucker",
-        "nazi",
         "nigger",
         "niggere",
         "orgasim",
@@ -90992,7 +90988,6 @@ var require_blacklist = __commonJS({
         "masochist",
         "masturbieren",
         "mutter ficker",
-        "nazi",
         "nigger",
         "orgasim",
         "orgasmus",
@@ -91266,7 +91261,6 @@ var require_blacklist = __commonJS({
         "masochist",
         "masturbate",
         "mother fucker",
-        "nazi",
         "nigger",
         "niggers",
         "orgasim",
@@ -91404,7 +91398,6 @@ var require_blacklist = __commonJS({
         "masoquista",
         "masturbarse",
         "madre folladora",
-        "nazi",
         "negro",
         "niggers",
         "orgasimo",
@@ -91674,7 +91667,6 @@ var require_blacklist = __commonJS({
         "masochist",
         "masturbate",
         "ama arruga",
-        "nazi",
         "beltz",
         "beltzak",
         "orgasim",
@@ -92083,7 +92075,6 @@ var require_blacklist = __commonJS({
         "masochiste",
         "masturber",
         "m\xE8re encul\xE9e",
-        "nazi",
         "n\xE8gres",
         "orgasim",
         "orgasme",
@@ -92211,7 +92202,6 @@ var require_blacklist = __commonJS({
         "s an iar-",
         "bochlach",
         "m\xE0thair fucker",
-        "nazi",
         "nigger",
         "niggers",
         "orgasm",
@@ -92351,7 +92341,6 @@ var require_blacklist = __commonJS({
         "masoquista",
         "masturbarse",
         "puta de nai",
-        "nazi",
         "nigger",
         "negros",
         "orgasim",
@@ -93023,7 +93012,6 @@ var require_blacklist = __commonJS({
         "masokis",
         "masturbasi",
         "keparat ibu",
-        "nazi",
         "orang negro",
         "negro",
         "orgasim",
@@ -93144,7 +93132,6 @@ var require_blacklist = __commonJS({
         "masochist",
         "sj\xE1lfsfr\xF3un",
         "m\xF3\xF0ur fucker",
-        "nazi",
         "nigger",
         "niggers",
         "orgasim",
@@ -93807,7 +93794,6 @@ var require_blacklist = __commonJS({
         "sine priore",
         "masturbari",
         "irrumator praetor matrem suam",
-        "nazi",
         "nigger",
         "reiteratis dissectionibus",
         "orgasim",
@@ -94489,7 +94475,6 @@ var require_blacklist = __commonJS({
         "masochist",
         "masturbate",
         "\u044D\u044D\u0436 fucker",
-        "nazi",
         "nigger",
         "niggers",
         "orgasim",
@@ -94767,7 +94752,6 @@ var require_blacklist = __commonJS({
         "masokis",
         "melancap",
         "ibu fucker",
-        "nazi",
         "nigger",
         "niggers",
         "orgasim",
@@ -94909,7 +94893,6 @@ var require_blacklist = __commonJS({
         "masochist",
         "masturbate",
         "omm fucker",
-        "nazi",
         "nigger",
         "niggers",
         "orgasim",
@@ -95186,7 +95169,6 @@ var require_blacklist = __commonJS({
         "masochist",
         "masturberen",
         "moeder klootzak",
-        "nazi",
         "neger",
         "negers",
         "orgasim",
@@ -95324,7 +95306,6 @@ var require_blacklist = __commonJS({
         "masochista",
         "uprawia\u0107 masturbacj\u0119",
         "matka skurwiela",
-        "nazi",
         "czarnuch",
         "czarnuchy",
         "orgasim",
@@ -96856,7 +96837,6 @@ var require_blacklist = __commonJS({
         "mazo\u015Fist",
         "mast\xFCrbasyon yapmak",
         "anne herif",
-        "nazi",
         "zenciler",
         "orgasim",
         "orgazm",
@@ -97046,9 +97026,7 @@ var require_blacklist = __commonJS({
         "viagra",
         "\u0432\u0443\u043B\u044C\u0432\u0438",
         "wang",
-        "\u0434\u0440\u043E\u0447\u0438\u0442\u044C",
-        "x",
-        "xxx"
+        "\u0434\u0440\u043E\u0447\u0438\u0442\u044C"
       ],
       uz: [
         "abort qilish",
@@ -97131,7 +97109,6 @@ var require_blacklist = __commonJS({
         "masochist",
         "mast qilib oling",
         "ota-onam",
-        "nazi",
         "nigger",
         "nigerlar",
         "orgazm",
@@ -97257,7 +97234,6 @@ var require_blacklist = __commonJS({
         "kh\u1ED5 d\xE2m",
         "th\u1EE7 d\xE2m",
         "m\u1EB9 ki\u1EBFp",
-        "nazi",
         "ng\u01B0\u1EDDi da \u0111en",
         "ng\u01B0\u1EDDi m\xE1ch n\u01B0\u1EDBc",
         "c\u1EF1c kho\xE1i",
@@ -97389,7 +97365,6 @@ var require_blacklist = __commonJS({
         "i-masochist",
         "ukushaya indlwabu",
         "umama fucker",
-        "nazi",
         "nigger",
         "niggers",
         "i-orgasim",
@@ -97545,8 +97520,8 @@ var saveMovie = async (data, language = "english") => {
     spoken_languages: data.spoken_languages,
     vote_average: data.vote_average,
     poster_path: data.poster_path,
+    director: data.director,
     language
-    // Add this line to set the language of the movie data
   });
   await movie.save();
   console.log(`Movie ${data.id} in ${language} saved in the database`);
@@ -97612,6 +97587,28 @@ var OPENAI_URL = "https://api.openai.com/v1/chat/completions";
 var model2 = "gpt-3.5-turbo-0301";
 
 // src/features/openai/handlers.ts
+async function fetchTranslation(prompt, userContent) {
+  const body = JSON.stringify({
+    messages: [prompt, userContent],
+    model: model2
+  });
+  const response = await fetch(OPENAI_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${OPENAI_API_KEY}`
+    },
+    body
+  });
+  return await response.json();
+}
+async function extractTranslatedMovie(response) {
+  const messageContent = response.choices[0].message.content;
+  const startIndex = messageContent.indexOf("{");
+  const endIndex = messageContent.lastIndexOf("}");
+  const jsonContent = messageContent.substring(startIndex, endIndex + 1);
+  return JSON.parse(jsonContent);
+}
 async function translateMovieToFrench(data) {
   const existingMovie = await getMovie(data.id, "french");
   if (existingMovie) {
@@ -97619,44 +97616,76 @@ async function translateMovieToFrench(data) {
     return existingMovie;
   }
   const prompt = {
-    "role": "system",
-    "content": "You are a helpful assistant translator."
+    role: "system",
+    content: "You are a helpful assistant translator."
   };
   const userContent = {
-    "role": "user",
-    "content": `Translate this JSON Movie object into French while respecting the original structure ${JSON.stringify(data)}. Please respond with a JSON-formatted structure but do not translate the keys.`
+    role: "user",
+    content: `Translate this JSON Movie object into French while respecting the original structure ${JSON.stringify(
+      data
+    )}. Please respond with a JSON-formatted structure but do not translate the keys.`
   };
-  const body = JSON.stringify({
-    messages: [prompt, userContent],
-    model: model2
-  });
   let attempts = 0;
   const maxAttempts = 3;
   while (attempts < maxAttempts) {
     try {
-      const response = await fetch(OPENAI_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${OPENAI_API_KEY}`
-        },
-        body
-      });
-      const result = await response.json();
-      const messageContent = result.choices[0].message.content;
-      const startIndex = messageContent.indexOf("{");
-      const endIndex = messageContent.lastIndexOf("}");
-      const jsonContent = messageContent.substring(startIndex, endIndex + 1);
-      const translatedMovie = JSON.parse(jsonContent);
-      saveMovieInFrench(translatedMovie);
+      const translationResponse = await fetchTranslation(prompt, userContent);
+      const translatedMovie = await extractTranslatedMovie(translationResponse);
+      await saveMovieInFrench(translatedMovie);
       return translatedMovie;
     } catch (error) {
       attempts++;
       if (attempts === maxAttempts) {
-        throw new Error(`Failed to translate movie to French after ${maxAttempts} attempts: ${error}`);
+        throw new Error(
+          `Failed to translate movie to French after ${maxAttempts} attempts: ${error}`
+        );
       }
     }
   }
+}
+async function getMoviesFromGPT3(summariesForGPT3) {
+  const systemContent = {
+    role: "system",
+    content: "You are a helpful assistant that suggests movies."
+  };
+  const userContent = {
+    role: "user",
+    content: `Here are some movies I like: ${JSON.stringify(
+      summariesForGPT3
+    )}. Based on my movie preferences, please suggest 5 more movies that I might like. The response must be formatted as a single JSON array of movie objects, each having the following properties: "id" (only if you know the themoviedb.org one, otherwise leave it out), "title", "release_date", and "genres". The "genres" property is an array itself containing the genre strings. Please refer to the example format below:
+
+    [
+      {
+        "id": (only if you know themoviedb.org one, otherwise leave it out)),
+        "title": "The Matrix",
+        "release_date": "1999-03-30",
+        "genres": [
+          "Action",
+          "Science Fiction"
+        ]
+      },
+      {
+        "id": (only if you know the themoviedb.org one, otherwise leave it out)),
+        "title": "Lord of the Rings",
+        "release_date": "2001-12-19",
+        "genres": [
+          "Adventure",
+          "Fantasy"
+        ]
+      }
+    ]
+
+Please note that all movie recommendations must be contained within the same array, not as separate entities and you should not include any other information in the response otherwise you will break the format.
+`
+  };
+  const response = await fetchTranslation(systemContent, userContent);
+  const messageContent = response.choices[0].message.content;
+  console.log(messageContent);
+  const startIndex = messageContent.indexOf("[");
+  const endIndex = messageContent.lastIndexOf("]");
+  const jsonContent = messageContent.substring(startIndex, endIndex + 1);
+  const movies = JSON.parse(jsonContent);
+  return movies;
 }
 
 // src/features/tmdb/requests.ts
@@ -97665,6 +97694,15 @@ var searchMoviesByTitle = async (title) => {
     `${TMDB_API_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(
       title
     )}`
+  );
+  const data = await response.json();
+  return data.results;
+};
+var searchMoviesByTitleAndDate = async (title, date) => {
+  const response = await fetch(
+    `${TMDB_API_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(
+      title
+    )}&primary_release_date.gte=${date}&primary_release_date.lte=${date}`
   );
   const data = await response.json();
   return data.results;
@@ -97843,6 +97881,42 @@ var registerTmdbRoutes = (fastify2) => {
   );
 };
 
+// src/routes/ai.ts
+var createSummaryFromMoviesAndSendItToGPT3 = async (movies) => {
+  const summariesForGPT3 = movies.map((movie) => {
+    return {
+      id: movie.id,
+      title: movie.title,
+      release_date: movie.release_date,
+      genres: movie.genres
+    };
+  });
+  const suggestedMoviesResponseFromGPT3 = await getMoviesFromGPT3(summariesForGPT3);
+  const suggestedMovies = await Promise.all(
+    suggestedMoviesResponseFromGPT3.map(async (movie) => {
+      const movies2 = await searchMoviesByTitleAndDate(movie.title, movie.release_date);
+      return movies2[0];
+    })
+  );
+  return suggestedMovies;
+};
+var registerAIRoutes = (fastify2) => {
+  fastify2.post(
+    "/v1/ai/movies/post/ids",
+    async (request, reply) => {
+      try {
+        const ids = request.body.ids;
+        const movies = (await Promise.all(ids.map((id) => getMovieDetails(id, "english")))).filter((movie) => movie !== void 0);
+        const detailedMovies = await createSummaryFromMoviesAndSendItToGPT3(movies);
+        reply.send(detailedMovies);
+      } catch (err) {
+        console.error(err);
+        reply.status(500).send({ error: "Something went wrong" });
+      }
+    }
+  );
+};
+
 // src/routes/index.ts
 var registerRoutes = (fastify2) => {
   fastify2.get("/v1/health", async (request, reply) => {
@@ -97880,10 +97954,13 @@ var registerRoutes = (fastify2) => {
     }
   );
   registerTmdbRoutes(fastify2);
+  registerAIRoutes(fastify2);
 };
 
 // src/index.ts
 var fastify = createServer();
+fastify.server.keepAliveTimeout = 12e4;
+fastify.server.timeout = 12e4;
 registerRoutes(fastify);
 var start = async () => {
   try {
