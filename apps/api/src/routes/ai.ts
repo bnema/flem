@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { Movie, SummaryItemMovie } from "@flem/types";
 import {
   searchMoviesByTitle,
+  searchMoviesByTitleAndDate,
   getMovieDetails,
 } from "../features/tmdb/requests";
 import { getMoviesFromGPT3 } from "../features/openai/handlers";
@@ -19,8 +20,15 @@ export const createSummaryFromMoviesAndSendItToGPT3 = async (movies: Movie[]) =>
 
   const suggestedMoviesResponseFromGPT3 = await getMoviesFromGPT3(summariesForGPT3);
   
-  console.log(suggestedMoviesResponseFromGPT3);
-  return suggestedMoviesResponseFromGPT3;
+  // We search the movie by title and date on TMDB to return the full movie details
+  const suggestedMovies = await Promise.all(
+    suggestedMoviesResponseFromGPT3.map(async (movie) => {
+      const movies = await searchMoviesByTitleAndDate(movie.title, movie.release_date);
+      return movies[0];
+    })
+  );
+
+  return suggestedMovies;
 };
 
 

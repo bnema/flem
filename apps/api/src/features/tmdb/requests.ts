@@ -20,6 +20,18 @@ export const searchMoviesByTitle = async (title: string) => {
   return data.results;
 };
 
+export const searchMoviesByTitleAndDate = async (title: string, date: string) => {
+  const response = await fetch(
+    `${TMDB_API_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(
+      title
+    )}&primary_release_date.gte=${date}&primary_release_date.lte=${date}`
+  );
+
+  const data = await response.json();
+
+  return data.results;
+};
+
 export const getMovieDetails = async (movieId: number, language: string) => {
   try {
     // Check if the movie is already in the database to avoid unnecessary API calls

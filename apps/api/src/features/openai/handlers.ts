@@ -1,5 +1,5 @@
 import { OPENAI_API_KEY, OPENAI_URL, model } from "../../config/openai";
-import { Movie, GPTPrompt, GPTResponse, SummaryItemMovie } from "@flem/types";
+import { Movie, GPTPrompt, GPTResponse, SummaryItemMovie, TranslationResponse } from "@flem/types";
 import { saveMovieInFrench, getMovie } from "../../db/mongo-handlers";
 
 async function fetchTranslation(
@@ -86,7 +86,7 @@ export async function getMoviesFromGPT3(
 
     [
       {
-        "id": (only if you know the themoviedb.org one, otherwise leave it out)),
+        "id": (only if you know themoviedb.org one, otherwise leave it out)),
         "title": "The Matrix",
         "release_date": "1999-03-30",
         "genres": [
@@ -105,7 +105,7 @@ export async function getMoviesFromGPT3(
       }
     ]
 
-Please note that all movie recommendations must be contained within the same array, not as separate entities. 
+Please note that all movie recommendations must be contained within the same array, not as separate entities and you should not include any other information in the response otherwise you will break the format.
 `,
   };
 
