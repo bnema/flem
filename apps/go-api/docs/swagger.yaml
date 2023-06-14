@@ -17,4 +17,76 @@ paths:
       summary: ping example
       tags:
       - example
+  /login:
+    get:
+      consumes:
+      - application/json
+      description: This route handles the '/login' endpoint and initiates OAuth authentication
+      parameters:
+      - description: OAuth provider name
+        in: query
+        name: provider
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Redirection to the OAuth URL
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Initiate OAuth authentication
+      tags:
+      - OAuth
+  /oauth-redirect:
+    get:
+      consumes:
+      - application/json
+      description: This route handles the '/oauth-redirect' endpoint and finalizes
+        the OAuth authentication process
+      parameters:
+      - description: OAuth code received from provider
+        in: query
+        name: code
+        required: true
+        type: string
+      - description: OAuth state received from provider
+        in: query
+        name: state
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: You can close this page now
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Finalize OAuth authentication
+      tags:
+      - OAuth
 swagger: "2.0"

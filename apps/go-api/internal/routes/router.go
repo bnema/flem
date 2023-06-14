@@ -21,6 +21,7 @@ func SetupRouter(app *types.App) *gin.Engine {
 		v1.GET("/oauth-redirect", func(c *gin.Context) {
 			RedirectRoute(app, c)
 		})
+
 	}
 	return r
 }

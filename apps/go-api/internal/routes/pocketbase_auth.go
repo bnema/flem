@@ -9,7 +9,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// loginRoute handles the '/login' endpoint and initiates OAuth authentication
+// LoginRoute godoc
+// @Summary Initiate OAuth authentication
+// @Description This route handles the '/login' endpoint and initiates OAuth authentication
+// @Tags OAuth
+// @Accept  json
+// @Produce  json
+// @Param provider query string true "OAuth provider name"
+// @Success 302 {string} string "Redirection to the OAuth URL"
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /login [get]
 func LoginRoute(app *types.App, c *gin.Context) {
 	provider := c.Query("provider")
 	authMethods, err := handlers.GetAuthMethods(app, provider) // Get authentication methods for the specified provider
@@ -42,7 +52,18 @@ func LoginRoute(app *types.App, c *gin.Context) {
 	c.Redirect(302, authMethods.AuthProviders[0].AuthURL) // Redirect user to OAuth URL
 }
 
-// redirectRoute handles the '/oauth-redirect' endpoint and finalizes the OAuth authentication process
+// RedirectRoute godoc
+// @Summary Finalize OAuth authentication
+// @Description This route handles the '/oauth-redirect' endpoint and finalizes the OAuth authentication process
+// @Tags OAuth
+// @Accept  json
+// @Produce  json
+// @Param code query string true "OAuth code received from provider"
+// @Param state query string true "OAuth state received from provider"
+// @Success 200 {string} string "You can close this page now"
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /oauth-redirect [get]
 func RedirectRoute(app *types.App, c *gin.Context) {
 	session, _ := app.SessionStore.Get(c.Request, "session") // Get session for this request
 	provider := session.Values["provider"].(string)
