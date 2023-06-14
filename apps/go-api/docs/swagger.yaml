@@ -1,4 +1,108 @@
 basePath: /api/v1
+definitions:
+  types.Error:
+    properties:
+      message:
+        type: string
+    type: object
+  types.Genre:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  types.Movie:
+    properties:
+      adult:
+        type: boolean
+      backdrop_path:
+        type: string
+      belongs_to_collection: {}
+      budget:
+        type: integer
+      director:
+        type: string
+      genres:
+        items:
+          $ref: '#/definitions/types.Genre'
+        type: array
+      homepage:
+        type: string
+      id:
+        type: integer
+      imdb_id:
+        type: string
+      language:
+        type: string
+      original_language:
+        type: string
+      original_title:
+        type: string
+      overview:
+        type: string
+      popularity:
+        type: number
+      poster_path:
+        type: string
+      production_companies:
+        items:
+          $ref: '#/definitions/types.ProductionCompany'
+        type: array
+      production_countries:
+        items:
+          $ref: '#/definitions/types.ProductionCountry'
+        type: array
+      release_date:
+        type: string
+      revenue:
+        type: integer
+      runtime:
+        type: integer
+      spoken_languages:
+        items:
+          $ref: '#/definitions/types.SpokenLanguage'
+        type: array
+      status:
+        type: string
+      tagline:
+        type: string
+      title:
+        type: string
+      video:
+        type: boolean
+      vote_average:
+        type: number
+      vote_count:
+        type: integer
+    type: object
+  types.ProductionCompany:
+    properties:
+      id:
+        type: integer
+      logo_path:
+        type: string
+      name:
+        type: string
+      origin_country:
+        type: string
+    type: object
+  types.ProductionCountry:
+    properties:
+      iso_3166_1:
+        type: string
+      name:
+        type: string
+    type: object
+  types.SpokenLanguage:
+    properties:
+      english_name:
+        type: string
+      iso_639_1:
+        type: string
+      name:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -55,7 +159,8 @@ paths:
       consumes:
       - application/json
       description: This route handles the '/oauth-redirect' endpoint and finalizes
-        the OAuth authentication process
+        the OAuth authentication process. After successful authentication, the session
+        is updated with a token and a userId.
       parameters:
       - description: OAuth code received from provider
         in: query
@@ -68,12 +173,14 @@ paths:
         required: true
         type: string
       produces:
-      - application/json
+      - text/html
       responses:
         "200":
-          description: You can close this page now
+          description: OK
           schema:
-            type: string
+            additionalProperties:
+              type: string
+            type: object
         "400":
           description: Bad Request
           schema:
@@ -89,4 +196,113 @@ paths:
       summary: Finalize OAuth authentication
       tags:
       - OAuth
+  /v1/tmdb/movies:
+    get:
+      consumes:
+      - application/json
+      description: Get movies that match the specified genre and were released in
+        a specific year
+      operationId: get-movies-by-genre-date
+      parameters:
+      - description: Genre ID
+        in: query
+        name: genre
+        required: true
+        type: string
+      - description: Release Year
+        in: query
+        name: year
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Movie'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.Error'
+      summary: Get movies by genre and release date
+  /v1/tmdb/movies/post/ids:
+    post:
+      consumes:
+      - application/json
+      description: Get movies with given IDs
+      operationId: get-movies-by-ids
+      parameters:
+      - description: List of Movie IDs
+        in: body
+        name: ids
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Movie'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.Error'
+      summary: Get movies by IDs
+  /v1/tmdb/movies/post/title:
+    post:
+      consumes:
+      - application/json
+      description: Get movies that match given titles
+      operationId: get-movies-by-title
+      parameters:
+      - description: List of Titles
+        in: body
+        name: titles
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Movie'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.Error'
+      summary: Search movies by title
+  /v1/tmdb/random10:
+    get:
+      consumes:
+      - application/json
+      description: Get 10 random popular movies
+      operationId: get-random-movies
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Movie'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.Error'
+      summary: Get random popular movies
 swagger: "2.0"

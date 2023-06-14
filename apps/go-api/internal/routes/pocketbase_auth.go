@@ -54,13 +54,13 @@ func LoginRoute(app *types.App, c *gin.Context) {
 
 // RedirectRoute godoc
 // @Summary Finalize OAuth authentication
-// @Description This route handles the '/oauth-redirect' endpoint and finalizes the OAuth authentication process
+// @Description This route handles the '/oauth-redirect' endpoint and finalizes the OAuth authentication process. After successful authentication, the session is updated with a token and a userId.
 // @Tags OAuth
 // @Accept  json
-// @Produce  json
+// @Produce  html
 // @Param code query string true "OAuth code received from provider"
 // @Param state query string true "OAuth state received from provider"
-// @Success 200 {string} string "You can close this page now"
+// @Success 200 {object} map[string]string
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /oauth-redirect [get]
