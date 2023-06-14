@@ -25,7 +25,7 @@ func SetupRouter(app *types.App) *gin.Engine {
 		v1.POST("/tmdb/movies/post/title", handlers.HandleMoviesByTitle)
 		v1.POST("/tmdb/movies/post/ids", handlers.HandleMoviesByIds)
 		v1.GET("/tmdb/movies", handlers.HandleMoviesByGenreAndDate)
-		v1.GET("/tmdb/movies/random", handlers.HandleRandomMovies)
+		v1.GET("/tmdb/movies/random10", handlers.HandleRandomMovies)
 
 	}
 	return r

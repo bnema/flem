@@ -18,7 +18,7 @@ import (
 // @Param titles body []string true "List of Titles"
 // @Success 200 {array} types.Movie
 // @Failure 500 {object} types.Error
-// @Router /v1/tmdb/movies/post/title [post]
+// @Router /tmdb/movies/post/title [post]
 func HandleMoviesByTitle(c *gin.Context) {
 	titles := c.PostFormArray("titles")
 	for _, title := range titles {
@@ -44,7 +44,7 @@ func HandleMoviesByTitle(c *gin.Context) {
 // @Param ids body []integer true "List of Movie IDs"
 // @Success 200 {array} types.Movie
 // @Failure 500 {object} types.Error
-// @Router /v1/tmdb/movies/post/ids [post]
+// @Router /tmdb/movies/post/ids [post]
 func HandleMoviesByIds(c *gin.Context) {
 	idsStr := c.PostFormArray("ids")
 	ids := make([]int, len(idsStr))
@@ -69,6 +69,10 @@ func HandleMoviesByIds(c *gin.Context) {
 	}
 }
 
+type TmdbApiResponse struct {
+	Results []types.Movie `json:"results"`
+}
+
 // @Summary Get random popular movies
 // @Description Get 10 random popular movies
 // @ID get-random-movies
@@ -76,20 +80,20 @@ func HandleMoviesByIds(c *gin.Context) {
 // @Produce json
 // @Success 200 {array} types.Movie
 // @Failure 500 {object} types.Error
-// @Router /v1/tmdb/random10 [get]
+// @Router /tmdb/movies/random10 [get]
 func HandleRandomMovies(c *gin.Context) {
-	var movies []types.Movie
+	var apiResponse TmdbApiResponse
 	query := url.Values{}
 	query.Add("sort_by", "popularity.desc")
 	query.Add("page", "1")
-	err := services.CallTMDBApi("/discover/movie", query, &movies)
+	err := services.CallTMDBApi("/discover/movie", query, &apiResponse)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": "Something went wrong",
 		})
 		return
 	}
-	c.JSON(200, movies)
+	c.JSON(200, apiResponse.Results)
 }
 
 // @Summary Get movies by genre and release date

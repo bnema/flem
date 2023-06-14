@@ -196,6 +196,84 @@ paths:
       summary: Finalize OAuth authentication
       tags:
       - OAuth
+  /tmdb/movies/post/ids:
+    post:
+      consumes:
+      - application/json
+      description: Get movies with given IDs
+      operationId: get-movies-by-ids
+      parameters:
+      - description: List of Movie IDs
+        in: body
+        name: ids
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Movie'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.Error'
+      summary: Get movies by IDs
+  /tmdb/movies/post/title:
+    post:
+      consumes:
+      - application/json
+      description: Get movies that match given titles
+      operationId: get-movies-by-title
+      parameters:
+      - description: List of Titles
+        in: body
+        name: titles
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Movie'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.Error'
+      summary: Search movies by title
+  /tmdb/movies/random10:
+    get:
+      consumes:
+      - application/json
+      description: Get 10 random popular movies
+      operationId: get-random-movies
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Movie'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.Error'
+      summary: Get random popular movies
   /v1/tmdb/movies:
     get:
       consumes:
@@ -227,82 +305,4 @@ paths:
           schema:
             $ref: '#/definitions/types.Error'
       summary: Get movies by genre and release date
-  /v1/tmdb/movies/post/ids:
-    post:
-      consumes:
-      - application/json
-      description: Get movies with given IDs
-      operationId: get-movies-by-ids
-      parameters:
-      - description: List of Movie IDs
-        in: body
-        name: ids
-        required: true
-        schema:
-          items:
-            type: integer
-          type: array
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/types.Movie'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/types.Error'
-      summary: Get movies by IDs
-  /v1/tmdb/movies/post/title:
-    post:
-      consumes:
-      - application/json
-      description: Get movies that match given titles
-      operationId: get-movies-by-title
-      parameters:
-      - description: List of Titles
-        in: body
-        name: titles
-        required: true
-        schema:
-          items:
-            type: string
-          type: array
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/types.Movie'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/types.Error'
-      summary: Search movies by title
-  /v1/tmdb/random10:
-    get:
-      consumes:
-      - application/json
-      description: Get 10 random popular movies
-      operationId: get-random-movies
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/types.Movie'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/types.Error'
-      summary: Get random popular movies
 swagger: "2.0"

@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/url"
 	"os"
 
-	docs "github.com/bnema/flem/go-api/docs"
+	"github.com/bnema/flem/go-api/docs"
 	"github.com/bnema/flem/go-api/internal/routes"
 	"github.com/bnema/flem/go-api/pkg/types"
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
 	_ "github.com/joho/godotenv/autoload"
 	swaggerfiles "github.com/swaggo/files"
@@ -16,6 +18,8 @@ import (
 
 // NewApp creates a new App struct with all the required fields
 func NewApp() *types.App {
+	fmt.Println("Starting NewApp")
+
 	baseUrl, err := url.Parse(os.Getenv("PB_URL"))
 	if err != nil {
 		panic(err)
@@ -62,14 +66,22 @@ func NewApp() *types.App {
 	}
 	app.PBUserURL = PBUserURL.String()
 
+	fmt.Println("Completed NewApp")
 	return app
 }
 
 // @BasePath /api/v1
 func main() {
+	gin.SetMode(gin.DebugMode) // Force debug mode
+
 	app := NewApp()
+
 	r := routes.SetupRouter(app)
 	docs.SwaggerInfo.BasePath = "/api/v1"
+
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-	r.Run(":8080")
+	err := r.Run(":8080") // Check the error return of Run
+	if err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }

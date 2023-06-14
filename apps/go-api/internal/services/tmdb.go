@@ -22,19 +22,21 @@ var (
 	blacklist    map[string][]string
 )
 
-func init() {
-	var err error
-	blacklist, err = utils.LoadBlacklist("../../pkg/utils/blacklist.json")
-	if err != nil {
-		panic(fmt.Sprintf("Failed to load blacklist: %v", err))
-	}
-}
+// func init() {
+// 	var err error
+// 	blacklist, err = utils.LoadBlacklist("../../pkg/utils/blacklist.json")
+// 	if err != nil {
+// 		panic(fmt.Sprintf("Failed to load blacklist: %v", err))
+// 	}
+// }
 
 func CallTMDBApi(path string, query url.Values, result interface{}) error {
 	query.Add("api_key", TMDB_API_KEY)
 	query.Add("include_adult", "false")
 	url := fmt.Sprintf("%s%s?%s", TMDB_API_URL, path, query.Encode())
+	fmt.Println("url", url)
 	req, err := http.NewRequest("GET", url, nil)
+	fmt.Println("req", req)
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
