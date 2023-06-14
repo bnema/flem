@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"encoding/json"
-	"io"
 	"os"
 	"strings"
 
@@ -10,13 +8,14 @@ import (
 )
 
 // Load the blacklist from a JSON file
-func LoadBlacklist(filename string) (map[string][]string, error) {
+func LoadBlacklist() (map[string][]string, error) {
 	var blacklist map[string][]string
-	data, err := io.ReadAll(os.Stdin)
+	// Load the blacklist.json file from the pkg/utils directory
+	data, err := os.Open("pkg/utils/blacklist.json")
 	if err != nil {
 		return nil, err
 	}
-	err = json.Unmarshal(data, &blacklist)
+	defer data.Close()
 	return blacklist, err
 }
 

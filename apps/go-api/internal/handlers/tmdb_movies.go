@@ -66,6 +66,9 @@ func HandleMoviesByIds(c *gin.Context) {
 				"error": "Something went wrong",
 			})
 			return
+		} else if services.ValidateMovieData(movie) != nil {
+			// we want another movie
+			continue
 		}
 		c.JSON(200, movie)
 	}
