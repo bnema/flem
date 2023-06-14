@@ -3,12 +3,15 @@ package handlers
 import (
 	"fmt"
 	"net/url"
-	"strconv"
 
 	"github.com/bnema/flem/go-api/internal/services"
 	"github.com/bnema/flem/go-api/pkg/types"
 	"github.com/gin-gonic/gin"
 )
+
+type TmdbApiResponse struct {
+	Results []types.Movie `json:"results"`
+}
 
 // @Summary Search movies by title
 // @Description Get movies that match given titles
@@ -46,19 +49,18 @@ func HandleMoviesByTitle(c *gin.Context) {
 // @Failure 500 {object} types.Error
 // @Router /tmdb/movies/post/ids [post]
 func HandleMoviesByIds(c *gin.Context) {
-	idsStr := c.PostFormArray("ids")
-	ids := make([]int, len(idsStr))
-	for i, idStr := range idsStr {
-		id, err := strconv.Atoi(idStr)
-		if err != nil {
-			c.JSON(500, gin.H{
-				"error": "Something went wrong",
-			})
-			return
-		}
-		ids[i] = id
+	var jsonInput []int
+	if err := c.BindJSON(&jsonInput); err != nil {
+		c.JSON(400, gin.H{
+			"error": "Invalid input",
+		})
+		return
+	}
+
+	// Iterate over ids in the jsonInput
+	for _, id := range jsonInput {
 		var movie types.Movie
-		err = services.CallTMDBApi(fmt.Sprintf("/movie/%d", id), url.Values{}, &movie)
+		err := services.CallTMDBApi(fmt.Sprintf("/movie/%d", id), url.Values{}, &movie)
 		if err != nil {
 			c.JSON(500, gin.H{
 				"error": "Something went wrong",
@@ -67,10 +69,6 @@ func HandleMoviesByIds(c *gin.Context) {
 		}
 		c.JSON(200, movie)
 	}
-}
-
-type TmdbApiResponse struct {
-	Results []types.Movie `json:"results"`
 }
 
 // @Summary Get random popular movies
