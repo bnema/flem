@@ -62,10 +62,10 @@ type Message struct {
 }
 
 type SummaryItemMovie struct {
-	ID          int     `json:"id"`
-	Title       string  `json:"title"`
-	ReleaseDate string  `json:"release_date"`
-	Genres      []Genre `json:"genres"`
+	ID          int      `json:"id"`
+	Title       string   `json:"title"`
+	ReleaseDate string   `json:"release_date"`
+	Genres      []string `json:"genres"` // Changez ceci
 }
 
 type TranslationResponse struct {

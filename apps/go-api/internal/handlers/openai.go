@@ -72,17 +72,41 @@ func GetMoviesFromGPT3(app *types.App, summaries []types.SummaryItemMovie) ([]ty
 
 	// Extract the message content from the response
 	messageContent := response.Choices[0].Message.Content
-
 	// Extract the JSON content from the message
 	startIndex := strings.Index(messageContent, "[")
 	endIndex := strings.LastIndex(messageContent, "]")
+	if startIndex == -1 || endIndex == -1 || startIndex >= endIndex {
+		return nil, fmt.Errorf("invalid JSON format in message content")
+	}
 	jsonContent := messageContent[startIndex : endIndex+1]
 
-	// Parse the JSON content into an array of movies
-	var movies []types.Movie
-	err = json.Unmarshal([]byte(jsonContent), &movies)
+	fmt.Printf("jsonContent: %s\n", jsonContent)
+
+	// Parse the JSON content into an array of summary items
+	var summaryMovies []types.SummaryItemMovie
+	err = json.Unmarshal([]byte(jsonContent), &summaryMovies)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse movie response: %w", err)
+		fmt.Printf("Unmarshal error: %v\n", err) // Affichez l'erreur ici
+		return nil, fmt.Errorf("failed to unmarshal JSON content: %w", err)
+	}
+
+	fmt.Printf("summaryMovies: %+v\n", summaryMovies)
+
+	// We pass the summary to handlers.FindMovieFromSummaryByTitleGenreDate
+	// to get the full movie object
+	var movies []types.Movie
+	for _, summaryMovie := range summaryMovies {
+		// Here, we make sure that summaryMovie has the right format
+		// by checking if Title and ReleaseDate fields are not empty
+		if summaryMovie.Title != "" && summaryMovie.ReleaseDate != "" {
+			movie, err := FindMovieFromSummaryByTitleGenreDate(app, summaryMovie)
+			if err != nil {
+				return nil, fmt.Errorf("failed to find movie from summary: %w", err)
+			}
+			movies = append(movies, movie)
+		} else {
+			return nil, fmt.Errorf("summary movie has missing fields")
+		}
 	}
 
 	return movies, nil

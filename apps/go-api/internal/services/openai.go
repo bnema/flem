@@ -38,17 +38,10 @@ func CallOPENAIApi(app *types.App, prompts []types.GPTPrompt, response interface
 	}
 
 	// Read the response body
-	// Read the response body
 	defer resp.Body.Close()
-	var responseBody map[string]interface{}
-	if err := json.NewDecoder(resp.Body).Decode(&responseBody); err != nil {
-		return fmt.Errorf("failed to decode response body: %w", err)
-	}
-
-	fmt.Println(responseBody)
+	// var responseBody map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(response); err != nil {
 		return fmt.Errorf("failed to decode response body: %w", err)
 	}
-
 	return nil
 }
