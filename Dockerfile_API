@@ -1,9 +1,6 @@
-FROM alpine:3.12
+FROM debian:stretch
 WORKDIR /app
-EXPOSE 8080
-# Copy the api.js file to the container at /api.js
-
 COPY ["dist/dysproof-api", "./"]
-
-# Run the api.js when the container launches
+RUN chmod +x ./dysproof-api
+EXPOSE 8080
 CMD ["./dysproof-api"]
