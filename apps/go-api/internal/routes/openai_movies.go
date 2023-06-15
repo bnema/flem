@@ -7,7 +7,18 @@ import (
 )
 
 // GetMoviesFromGPT3RouteHandler is a gin route handler that takes a list of movie ids,
-// fetches the movies, converts them to summaries, and sends those summaries to the GPT-3 API
+// fetches the movies, converts them to summaries, and sends those summaries to the GPT-3 API.
+// @Summary Get movie suggestions based on favorite movies
+// @Description This API receives a list of favorite movie IDs, fetches the corresponding movie summaries,
+// and uses GPT-3 to generate movie suggestions based on these preferences.
+// @Tags Movies
+// @Accept json
+// @Produce json
+// @Param movies body []int true "A list of favorite movie IDs"
+// @Success 200 {array} types.Movie "Successful retrieval of movie suggestions"
+// @Failure 400 {object} types.Error "Invalid input"
+// @Failure 500 {object} types.Error "Failed to get movie summaries or suggestions"
+// @Router /api/v1/openai/movies [post]
 func GetMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var jsonInput []int
