@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:latest
 WORKDIR /app
 COPY ["dist/dysproof-api", "./"]
 RUN chmod +x ./dysproof-api
