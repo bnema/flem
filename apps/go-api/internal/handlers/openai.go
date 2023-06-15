@@ -9,20 +9,20 @@ import (
 	"github.com/bnema/flem/go-api/pkg/types"
 )
 
-func GetMoviesFromGPT3(app *types.App, summaries []types.SummaryItemMovie) (types.GPTResponse, error) {
+func GetMoviesFromGPT3(app *types.App, summaries []types.SummaryItemMovie) ([]types.Movie, error) {
 	// Convert the summaries to JSON strings
 	summaryStrings := make([]string, len(summaries))
 	for i, summary := range summaries {
 		jsonSummary, err := json.Marshal(summary)
 		if err != nil {
-			return types.GPTResponse{}, fmt.Errorf("failed to marshal summary: %w", err)
+			return nil, fmt.Errorf("failed to marshal summary: %w", err)
 		}
 		summaryStrings[i] = string(jsonSummary)
 	}
 
 	// Concatenate all summaries into a single string
 	joinedSummaries := strings.Join(summaryStrings, ", ")
-	fmt.Println(joinedSummaries)
+
 	// Create the user prompt
 	userPrompt := types.GPTPrompt{
 		Role: "user",
@@ -62,8 +62,28 @@ func GetMoviesFromGPT3(app *types.App, summaries []types.SummaryItemMovie) (type
 	var response types.GPTResponse
 	err := services.CallOPENAIApi(app, []types.GPTPrompt{systemPrompt, userPrompt}, &response)
 	if err != nil {
-		return types.GPTResponse{}, fmt.Errorf("failed to call OpenAI API: %w", err)
+		return nil, fmt.Errorf("failed to call OpenAI API: %w", err)
 	}
-	fmt.Println(response)
-	return response, nil
+
+	// Check if response.Choices is not empty
+	if len(response.Choices) == 0 {
+		return nil, fmt.Errorf("empty choices in GPT response")
+	}
+
+	// Extract the message content from the response
+	messageContent := response.Choices[0].Message.Content
+
+	// Extract the JSON content from the message
+	startIndex := strings.Index(messageContent, "[")
+	endIndex := strings.LastIndex(messageContent, "]")
+	jsonContent := messageContent[startIndex : endIndex+1]
+
+	// Parse the JSON content into an array of movies
+	var movies []types.Movie
+	err = json.Unmarshal([]byte(jsonContent), &movies)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse movie response: %w", err)
+	}
+
+	return movies, nil
 }
