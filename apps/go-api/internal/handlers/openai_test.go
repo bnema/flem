@@ -16,16 +16,13 @@ func TestGetMoviesFromGPT3(t *testing.T) {
 			ID:          1,
 			Title:       "The Matrix",
 			ReleaseDate: "1999-03-30",
-			Genres:      []types.Genre{{Name: "Action"}},
+			Genres:      []string{"Action", "Science Fiction"},
 		},
 		{
 			ID:          2,
 			Title:       "Lord of the Rings",
 			ReleaseDate: "2001-12-19",
-			Genres: []types.Genre{
-				{Name: "Adventure"},
-				{Name: "Fantasy"},
-			},
+			Genres:      []string{"Adventure", "Fantasy"},
 		},
 	}
 
