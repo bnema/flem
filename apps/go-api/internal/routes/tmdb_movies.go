@@ -1,4 +1,4 @@
-package handlers
+package routes
 
 import (
 	"fmt"
@@ -22,7 +22,7 @@ type TmdbApiResponse struct {
 // @Success 200 {array} types.Movie
 // @Failure 500 {object} types.Error
 // @Router /tmdb/movies/post/title [post]
-func HandleMoviesByTitle(c *gin.Context) {
+func TMDBMovieByTitleRouteHandler(c *gin.Context) {
 	titles := c.PostFormArray("titles")
 	for _, title := range titles {
 		var movies []types.Movie
@@ -48,7 +48,7 @@ func HandleMoviesByTitle(c *gin.Context) {
 // @Success 200 {array} types.Movie
 // @Failure 500 {object} types.Error
 // @Router /tmdb/movies/post/ids [post]
-func HandleMoviesByIds(c *gin.Context) {
+func TMDBMoviesByIDSRouteHandler(c *gin.Context) {
 	var jsonInput []int
 	if err := c.BindJSON(&jsonInput); err != nil {
 		c.JSON(400, gin.H{
@@ -82,7 +82,7 @@ func HandleMoviesByIds(c *gin.Context) {
 // @Success 200 {array} types.Movie
 // @Failure 500 {object} types.Error
 // @Router /tmdb/movies/random10 [get]
-func HandleRandomMovies(c *gin.Context) {
+func TMDBRandomMoviesRouteHandler(c *gin.Context) {
 	var apiResponse TmdbApiResponse
 	query := url.Values{}
 	query.Add("sort_by", "popularity.desc")
@@ -107,7 +107,7 @@ func HandleRandomMovies(c *gin.Context) {
 // @Success 200 {array} types.Movie
 // @Failure 500 {object} types.Error
 // @Router /v1/tmdb/movies [get]
-func HandleMoviesByGenreAndDate(c *gin.Context) {
+func TMDBMoviesByGenreAndDateRouteHandler(c *gin.Context) {
 	genre := c.Query("genre")
 	year := c.Query("year")
 	var movies []types.Movie
