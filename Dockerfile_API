@@ -1,6 +1,15 @@
 FROM debian:latest
+
+RUN apt-get update && \
+    apt-get install -y ca-certificates && \
+    update-ca-certificates
+
 WORKDIR /app
+
 COPY ["dist/dysproof-api", "./"]
+
 RUN chmod +x ./dysproof-api
+
 EXPOSE 8080
+
 CMD ["./dysproof-api"]
