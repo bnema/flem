@@ -159,7 +159,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Movies"
+                    "OpenAI"
                 ],
                 "summary": "Get movie suggestions based on favorite movies",
                 "parameters": [
@@ -210,6 +210,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "TMDB"
+                ],
                 "summary": "Get movies by genre and release date",
                 "operationId": "get-movies-by-genre-date",
                 "parameters": [
@@ -255,6 +258,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "TMDB"
+                ],
                 "summary": "Get movies by IDs",
                 "operationId": "get-movies-by-ids",
                 "parameters": [
@@ -299,6 +305,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "TMDB"
+                ],
                 "summary": "Search movies by title",
                 "operationId": "get-movies-by-title",
                 "parameters": [
@@ -342,6 +351,9 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "TMDB"
                 ],
                 "summary": "Get random popular movies",
                 "operationId": "get-random-movies",

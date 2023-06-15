@@ -148,7 +148,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Movies"
+                    "OpenAI"
                 ],
                 "summary": "Get movie suggestions based on favorite movies",
                 "parameters": [
@@ -199,6 +199,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "TMDB"
+                ],
                 "summary": "Get movies by genre and release date",
                 "operationId": "get-movies-by-genre-date",
                 "parameters": [
@@ -244,6 +247,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "TMDB"
+                ],
                 "summary": "Get movies by IDs",
                 "operationId": "get-movies-by-ids",
                 "parameters": [
@@ -288,6 +294,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "TMDB"
+                ],
                 "summary": "Search movies by title",
                 "operationId": "get-movies-by-title",
                 "parameters": [
@@ -331,6 +340,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "TMDB"
                 ],
                 "summary": "Get random popular movies",
                 "operationId": "get-random-movies",

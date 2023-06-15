@@ -16,6 +16,7 @@ type TmdbApiResponse struct {
 
 // @Summary Search movies by title
 // @Description Get movies that match given titles
+// @Tags TMDB
 // @ID get-movies-by-title
 // @Accept json
 // @Produce json
@@ -42,6 +43,7 @@ func TMDBMovieByTitleRouteHandler(c *gin.Context) {
 
 // @Summary Get movies by IDs
 // @Description Get movies with given IDs
+// @Tags TMDB
 // @ID get-movies-by-ids
 // @Accept json
 // @Produce json
@@ -86,6 +88,7 @@ func TMDBMoviesByIDSRouteHandler(c *gin.Context) {
 
 // @Summary Get random popular movies
 // @Description Get 10 random popular movies
+// @Tags TMDB
 // @ID get-random-movies
 // @Accept json
 // @Produce json
@@ -110,6 +113,7 @@ func TMDBRandomMoviesRouteHandler(c *gin.Context) {
 
 // @Summary Get movies by genre and release date
 // @Description Get movies that match the specified genre and were released in a specific year
+// @Tags TMDB
 // @ID get-movies-by-genre-date
 // @Accept json
 // @Produce json
@@ -125,12 +129,14 @@ func TMDBMoviesByGenreAndDateRouteHandler(c *gin.Context) {
 	query := url.Values{}
 	query.Add("with_genres", genre)
 	query.Add("primary_release_year", year)
-	err := services.CallTMDBApi("/discover/movie", query, &movies)
+	result := &types.MovieDiscoveryResponse{}
+	err := services.CallTMDBApi("/discover/movie", query, result)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": "Something went wrong",
 		})
 		return
 	}
+	movies = result.Results
 	c.JSON(200, movies)
 }

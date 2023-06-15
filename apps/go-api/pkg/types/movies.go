@@ -87,3 +87,8 @@ type ChoiceResponse struct {
 type Error struct {
 	Message string `json:"message"`
 }
+
+type MovieDiscoveryResponse struct {
+	Page    int     `json:"page"`
+	Results []Movie `json:"results"`
+}

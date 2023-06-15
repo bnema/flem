@@ -13,7 +13,7 @@ import (
 // @Summary Get movie suggestions based on favorite movies
 // @Description This API receives a list of favorite movie IDs, fetches the corresponding movie summaries,
 // and uses GPT-3 to generate movie suggestions based on these preferences.
-// @Tags Movies
+// @Tags OpenAI
 // @Accept json
 // @Produce json
 // @Param movies body []int true "A list of favorite movie IDs"
