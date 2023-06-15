@@ -1,22 +1,30 @@
 package utils
 
 import (
+	"encoding/json"
 	"os"
 	"strings"
 
 	"github.com/bnema/flem/go-api/pkg/types"
 )
 
-// Load the blacklist from a JSON file
-func LoadBlacklist() (map[string][]string, error) {
+// LoadBlacklist loads the blacklist from a JSON file at the given path.
+func LoadBlacklist(path string) (map[string][]string, error) {
 	var blacklist map[string][]string
-	// Load the blacklist.json file from the pkg/utils directory
-	data, err := os.Open("pkg/utils/blacklist.json")
+	// Load the blacklist.json file from the provided path
+	data, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 	defer data.Close()
-	return blacklist, err
+
+	// Decode the JSON data into the blacklist map
+	if err := json.NewDecoder(data).Decode(&blacklist); err != nil {
+		return nil, err
+	}
+
+	return blacklist, nil
+
 }
 
 // CheckBlacklist checks if a movie's title or overview contains blacklisted words
