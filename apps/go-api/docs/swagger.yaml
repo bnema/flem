@@ -106,41 +106,6 @@ definitions:
 info:
   contact: {}
 paths:
-  /api/v1/openai/movies:
-    post:
-      consumes:
-      - application/json
-      description: This API receives a list of favorite movie IDs, fetches the corresponding
-        movie summaries,
-      parameters:
-      - description: A list of favorite movie IDs
-        in: body
-        name: movies
-        required: true
-        schema:
-          items:
-            type: integer
-          type: array
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful retrieval of movie suggestions
-          schema:
-            items:
-              $ref: '#/definitions/types.Movie'
-            type: array
-        "400":
-          description: Invalid input
-          schema:
-            $ref: '#/definitions/types.Error'
-        "500":
-          description: Failed to get movie summaries or suggestions
-          schema:
-            $ref: '#/definitions/types.Error'
-      summary: Get movie suggestions based on favorite movies
-      tags:
-      - Movies
   /example/helloworld:
     get:
       consumes:
@@ -231,6 +196,41 @@ paths:
       summary: Finalize OAuth authentication
       tags:
       - OAuth
+  /openai/movies:
+    post:
+      consumes:
+      - application/json
+      description: This API receives a list of favorite movie IDs, fetches the corresponding
+        movie summaries,
+      parameters:
+      - description: A list of favorite movie IDs
+        in: body
+        name: movies
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful retrieval of movie suggestions
+          schema:
+            items:
+              $ref: '#/definitions/types.Movie'
+            type: array
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/types.Error'
+        "500":
+          description: Failed to get movie summaries or suggestions
+          schema:
+            $ref: '#/definitions/types.Error'
+      summary: Get movie suggestions based on favorite movies
+      tags:
+      - Movies
   /tmdb/movies/post/ids:
     post:
       consumes:

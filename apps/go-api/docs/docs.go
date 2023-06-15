@@ -16,58 +16,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/openai/movies": {
-            "post": {
-                "description": "This API receives a list of favorite movie IDs, fetches the corresponding movie summaries,",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Movies"
-                ],
-                "summary": "Get movie suggestions based on favorite movies",
-                "parameters": [
-                    {
-                        "description": "A list of favorite movie IDs",
-                        "name": "movies",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer"
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful retrieval of movie suggestions",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/types.Movie"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input",
-                        "schema": {
-                            "$ref": "#/definitions/types.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Failed to get movie summaries or suggestions",
-                        "schema": {
-                            "$ref": "#/definitions/types.Error"
-                        }
-                    }
-                }
-            }
-        },
         "/example/helloworld": {
             "get": {
                 "description": "do ping",
@@ -196,6 +144,58 @@ const docTemplate = `{
                             "additionalProperties": {
                                 "type": "string"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/openai/movies": {
+            "post": {
+                "description": "This API receives a list of favorite movie IDs, fetches the corresponding movie summaries,",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Movies"
+                ],
+                "summary": "Get movie suggestions based on favorite movies",
+                "parameters": [
+                    {
+                        "description": "A list of favorite movie IDs",
+                        "name": "movies",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful retrieval of movie suggestions",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/types.Movie"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/types.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to get movie summaries or suggestions",
+                        "schema": {
+                            "$ref": "#/definitions/types.Error"
                         }
                     }
                 }

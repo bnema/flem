@@ -18,7 +18,7 @@ import (
 // @Success 200 {array} types.Movie "Successful retrieval of movie suggestions"
 // @Failure 400 {object} types.Error "Invalid input"
 // @Failure 500 {object} types.Error "Failed to get movie summaries or suggestions"
-// @Router /api/v1/openai/movies [post]
+// @Router /openai/movies [post]
 func GetMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var jsonInput []int
