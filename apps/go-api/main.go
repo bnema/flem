@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/url"
 	"os"
@@ -18,40 +17,35 @@ import (
 
 // NewApp creates a new App struct with all the required fields
 func NewApp() *types.App {
-	fmt.Println("Starting NewApp")
-
 	baseUrl, err := url.Parse(os.Getenv("PB_URL"))
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("PB_URL", baseUrl.String())
 
 	app := &types.App{
-		SessionStore: sessions.NewCookieStore([]byte(os.Getenv("SESSION_SECRET"))),
-		PBUrl:        baseUrl.String(),
+		SessionStore:   sessions.NewCookieStore([]byte(os.Getenv("SESSION_SECRET"))),
+		PBUrl:          baseUrl.String(),
+		OpenAI_API_Key: os.Getenv("OPENAI_API_KEY"),
+		OpenAI_URL:     "https://api.openai.com/v1/chat/completions",
+		OpenAI_Model:   "gpt-3.5-turbo-0613",
 	}
-	fmt.Println("SESSION_SECRET", os.Getenv("SESSION_SECRET"))
 
 	authMethodsUrl, err := baseUrl.Parse("/api/collections/users/auth-methods")
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("authMethodsUrl", authMethodsUrl.String())
-
 	app.PBAuthMethodsURL = authMethodsUrl.String()
 
 	authRefreshUrl, err := baseUrl.Parse("/api/collections/users/auth-refresh")
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("authRefreshUrl", authRefreshUrl.String())
 	app.PBAuthRefreshURL = authRefreshUrl.String()
 
 	tradeUrl, err := baseUrl.Parse("/api/collections/users/auth-with-oauth2")
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("tradeUrl", tradeUrl.String())
 	app.PBTradeURL = tradeUrl.String()
 
 	oauthRedirectURL, ok := os.LookupEnv("OAUTH_REDIRECT_URL")
@@ -66,7 +60,6 @@ func NewApp() *types.App {
 	}
 	app.PBUserURL = PBUserURL.String()
 
-	fmt.Println("Completed NewApp")
 	return app
 }
 

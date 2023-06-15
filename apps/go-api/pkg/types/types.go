@@ -10,4 +10,7 @@ type App struct {
 	PBAuthRefreshURL string
 	OAuthRedirectURL string
 	PBUserURL        string
+	OpenAI_API_Key   string
+	OpenAI_URL       string
+	OpenAI_Model     string
 }
