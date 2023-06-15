@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"fmt"
+
 	"github.com/bnema/flem/go-api/internal/handlers"
 	"github.com/bnema/flem/go-api/pkg/types"
 	"github.com/gin-gonic/gin"
@@ -32,7 +34,8 @@ func GetMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 		summaries, err := handlers.CreateMovieSummariesFromTMDBMovies(app, jsonInput)
 		if err != nil {
 			c.JSON(500, gin.H{
-				"error": "Failed to get movie summaries",
+				// give more details in console
+				"error": fmt.Sprintf("Failed to get movie summaries: %v", err),
 			})
 			return
 		}
