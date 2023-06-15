@@ -53,15 +53,6 @@ type SpokenLanguage struct {
 	Name        string `json:"name"`
 }
 
-type GPTPrompt struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
-}
-
-type GPTResponse struct {
-	Choices []Choice `json:"choices"`
-}
-
 type Choice struct {
 	Message Message `json:"message"`
 }

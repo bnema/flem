@@ -6,6 +6,7 @@ import (
 
 	"github.com/bnema/flem/go-api/internal/services"
 	"github.com/bnema/flem/go-api/pkg/types"
+	"github.com/bnema/flem/go-api/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -60,6 +61,8 @@ func TMDBMoviesByIDSRouteHandler(c *gin.Context) {
 	// Iterate over ids in the jsonInput
 	for _, id := range jsonInput {
 		var movie types.Movie
+		// Declare a slice to hold summary movies
+		var summaryMovies []types.SummaryItemMovie
 		err := services.CallTMDBApi(fmt.Sprintf("/movie/%d", id), url.Values{}, &movie)
 		if err != nil {
 			c.JSON(500, gin.H{
@@ -70,6 +73,13 @@ func TMDBMoviesByIDSRouteHandler(c *gin.Context) {
 			// we want another movie
 			continue
 		}
+		// Create summary for each movie
+		summaryMovie := utils.SummaryFromMovie(movie)
+		summaryMovies = append(summaryMovies, summaryMovie)
+
+		// Return summary movies as fmt
+		fmt.Println(summaryMovies)
+
 		c.JSON(200, movie)
 	}
 }
@@ -94,6 +104,7 @@ func TMDBRandomMoviesRouteHandler(c *gin.Context) {
 		})
 		return
 	}
+
 	c.JSON(200, apiResponse.Results)
 }
 
