@@ -201,6 +201,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/tmdb/movies": {
+            "get": {
+                "description": "Get movies that match the specified genre and were released in a specific year",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get movies by genre and release date",
+                "operationId": "get-movies-by-genre-date",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Genre ID",
+                        "name": "genre",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Release Year",
+                        "name": "year",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/types.Movie"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/types.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/tmdb/movies/post/ids": {
             "post": {
                 "description": "Get movies with given IDs",
@@ -300,51 +345,6 @@ const docTemplate = `{
                 ],
                 "summary": "Get random popular movies",
                 "operationId": "get-random-movies",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/types.Movie"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/types.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/tmdb/movies": {
-            "get": {
-                "description": "Get movies that match the specified genre and were released in a specific year",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Get movies by genre and release date",
-                "operationId": "get-movies-by-genre-date",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Genre ID",
-                        "name": "genre",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Release Year",
-                        "name": "year",
-                        "in": "query"
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",

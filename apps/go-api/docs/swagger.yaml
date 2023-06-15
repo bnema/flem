@@ -231,6 +231,37 @@ paths:
       summary: Get movie suggestions based on favorite movies
       tags:
       - Movies
+  /tmdb/movies:
+    get:
+      consumes:
+      - application/json
+      description: Get movies that match the specified genre and were released in
+        a specific year
+      operationId: get-movies-by-genre-date
+      parameters:
+      - description: Genre ID
+        in: query
+        name: genre
+        required: true
+        type: string
+      - description: Release Year
+        in: query
+        name: year
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Movie'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/types.Error'
+      summary: Get movies by genre and release date
   /tmdb/movies/post/ids:
     post:
       consumes:
@@ -309,35 +340,4 @@ paths:
           schema:
             $ref: '#/definitions/types.Error'
       summary: Get random popular movies
-  /v1/tmdb/movies:
-    get:
-      consumes:
-      - application/json
-      description: Get movies that match the specified genre and were released in
-        a specific year
-      operationId: get-movies-by-genre-date
-      parameters:
-      - description: Genre ID
-        in: query
-        name: genre
-        required: true
-        type: string
-      - description: Release Year
-        in: query
-        name: year
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/types.Movie'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/types.Error'
-      summary: Get movies by genre and release date
 swagger: "2.0"

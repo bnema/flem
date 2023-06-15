@@ -117,7 +117,7 @@ func TMDBRandomMoviesRouteHandler(c *gin.Context) {
 // @Param year query string false "Release Year"
 // @Success 200 {array} types.Movie
 // @Failure 500 {object} types.Error
-// @Router /v1/tmdb/movies [get]
+// @Router /tmdb/movies [get]
 func TMDBMoviesByGenreAndDateRouteHandler(c *gin.Context) {
 	genre := c.Query("genre")
 	year := c.Query("year")
