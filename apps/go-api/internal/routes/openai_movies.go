@@ -51,6 +51,19 @@ func SuggestMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 	}
 }
 
+// TranslateMoviesFromGPT3RouteHandler is a gin route handler that takes a list of movie ids,
+// fetches the movies, and translates them to the specified language using GPT-3.
+// @Summary Translate movies to a specified language
+// @Description This API receives a list of movie IDs and translates the corresponding movie information to the specified language.
+// @Tags OpenAI
+// @Accept json
+// @Produce json
+// @Param lang query string true "The language to translate to"
+// @Param movies body []int true "A list of movie IDs"
+// @Success 200 {array} types.Movie "Successful translation of movies"
+// @Failure 400 {object} types.Error "Invalid input"
+// @Failure 500 {object} types.Error "Failed to get movie with ID"
+// @Router /openai/translate [post]
 func TranslateMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Extract the lang query parameter
