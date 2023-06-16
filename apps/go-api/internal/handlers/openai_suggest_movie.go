@@ -9,7 +9,7 @@ import (
 	"github.com/bnema/flem/go-api/pkg/types"
 )
 
-func GetMoviesFromGPT3(app *types.App, summaries []types.SummaryItemMovie) ([]types.Movie, error) {
+func SuggestMoviesFromGPT3(app *types.App, summaries []types.SummaryItemMovie) ([]types.Movie, error) {
 	// Convert the summaries to JSON strings
 	summaryStrings := make([]string, len(summaries))
 	for i, summary := range summaries {

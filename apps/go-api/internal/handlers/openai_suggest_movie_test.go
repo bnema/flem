@@ -27,7 +27,7 @@ func TestGetMoviesFromGPT3(t *testing.T) {
 	}
 
 	// Call the function
-	movies, err := GetMoviesFromGPT3(app, summaries)
+	movies, err := SuggestMoviesFromGPT3(app, summaries)
 
 	// Check for errors
 	if err != nil {

@@ -64,3 +64,12 @@ func FindMovieFromSummaryByTitleGenreDate(app *types.App, summary types.SummaryI
 
 	return movie, fmt.Errorf("failed to find movie from summary")
 }
+
+func FindMovieByID(app *types.App, id int) (types.Movie, error) {
+	var movie types.Movie
+	err := services.CallTMDBApi(fmt.Sprintf("/movie/%d", id), url.Values{}, &movie)
+	if err != nil {
+		return movie, fmt.Errorf("failed to call TMDB API: %w", err)
+	}
+	return movie, nil
+}

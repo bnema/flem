@@ -21,7 +21,7 @@ import (
 // @Failure 400 {object} types.Error "Invalid input"
 // @Failure 500 {object} types.Error "Failed to get movie summaries or suggestions"
 // @Router /openai/movies [post]
-func GetMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
+func SuggestMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var jsonInput []int
 		if err := c.BindJSON(&jsonInput); err != nil {
@@ -39,7 +39,7 @@ func GetMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 			})
 			return
 		}
-		movies, err := handlers.GetMoviesFromGPT3(app, summaries)
+		movies, err := handlers.SuggestMoviesFromGPT3(app, summaries)
 		if err != nil {
 			c.JSON(500, gin.H{
 				"error": "Failed to get movie suggestions",
@@ -48,5 +48,49 @@ func GetMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 		}
 
 		c.JSON(200, movies)
+	}
+}
+
+func TranslateMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Extract the lang query parameter
+		lang := c.Query("lang")
+
+		// Accept a list of movie IDS, retrieve the Movies from TMDB, and translate the full Movie objects to the specified language
+		var jsonInput []int
+		if err := c.BindJSON(&jsonInput); err != nil {
+			c.JSON(400, gin.H{
+				"error": "Invalid input",
+			})
+			return
+		}
+
+		// Initialize a slice to hold the movies
+		var movies []types.Movie
+
+		// Iterate over the movie IDs and retrieve each movie
+		for _, id := range jsonInput {
+			movie, err := handlers.FindMovieByID(app, id)
+			if err != nil {
+				c.JSON(500, gin.H{
+					"error": fmt.Sprintf("Failed to get movie with ID %d", id),
+				})
+				return
+			}
+
+			// Append the retrieved movie to the movies slice
+			movies = append(movies, movie)
+		}
+
+		// we translate the movies to the specified language
+		translatedMovies, err := handlers.TranslateMoviesFromGPT3(app, movies, lang)
+		if err != nil {
+			c.JSON(500, gin.H{
+				"error": fmt.Sprintf("Failed to translate movies: %v", err),
+			})
+			return
+		}
+
+		c.JSON(200, translatedMovies)
 	}
 }

@@ -30,7 +30,8 @@ func SetupRouter(app *types.App) *gin.Engine {
 		}
 		openai := v1.Group("/openai")
 		{
-			openai.POST("/movies", GetMoviesFromGPT3RouteHandler(app))
+			openai.POST("/movies", SuggestMoviesFromGPT3RouteHandler(app))
+			openai.POST("/translate", TranslateMoviesFromGPT3RouteHandler(app))
 		}
 
 	}
