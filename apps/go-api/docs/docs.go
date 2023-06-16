@@ -201,6 +201,65 @@ const docTemplate = `{
                 }
             }
         },
+        "/openai/translate": {
+            "post": {
+                "description": "This API receives a list of movie IDs and translates the corresponding movie information to the specified language.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OpenAI"
+                ],
+                "summary": "Translate movies to a specified language",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The language to translate to",
+                        "name": "lang",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "A list of movie IDs",
+                        "name": "movies",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful translation of movies",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/types.Movie"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/types.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to get movie with ID",
+                        "schema": {
+                            "$ref": "#/definitions/types.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/tmdb/movies": {
             "get": {
                 "description": "Get movies that match the specified genre and were released in a specific year",

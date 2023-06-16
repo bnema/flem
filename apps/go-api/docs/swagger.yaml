@@ -231,6 +231,46 @@ paths:
       summary: Get movie suggestions based on favorite movies
       tags:
       - OpenAI
+  /openai/translate:
+    post:
+      consumes:
+      - application/json
+      description: This API receives a list of movie IDs and translates the corresponding
+        movie information to the specified language.
+      parameters:
+      - description: The language to translate to
+        in: query
+        name: lang
+        required: true
+        type: string
+      - description: A list of movie IDs
+        in: body
+        name: movies
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful translation of movies
+          schema:
+            items:
+              $ref: '#/definitions/types.Movie'
+            type: array
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/types.Error'
+        "500":
+          description: Failed to get movie with ID
+          schema:
+            $ref: '#/definitions/types.Error'
+      summary: Translate movies to a specified language
+      tags:
+      - OpenAI
   /tmdb/movies:
     get:
       consumes:
