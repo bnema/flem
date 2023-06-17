@@ -52,7 +52,7 @@ func CallOPENAIApiWithFunctionDefinition(app *types.App, prompts []types.GPTProm
 		"model":      app.OpenAI_Model,
 		"messages":   prompts,
 		"functions":  []map[string]interface{}{functionDefinition},
-		"max_tokens": 1024, // Or any other number that suits your needs
+		"max_tokens": 2048, // Or any other number that suits your needs
 	}
 	requestBodyBytes, err := json.Marshal(requestBody)
 	if err != nil {
@@ -74,6 +74,16 @@ func CallOPENAIApiWithFunctionDefinition(app *types.App, prompts []types.GPTProm
 	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to send request: %w", err)
+	}
+
+	// Check the response status
+	if resp.StatusCode != http.StatusOK {
+		// If the error is due to exceeding the token limit
+		if resp.StatusCode == http.StatusRequestEntityTooLarge {
+			return fmt.Errorf("request exceeded the token limit")
+		}
+		// For other errors
+		return fmt.Errorf("received non-200 response code: %d", resp.StatusCode)
 	}
 
 	// Read the response body

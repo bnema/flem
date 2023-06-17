@@ -2,6 +2,7 @@ package routes
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/bnema/flem/go-api/internal/handlers"
 	"github.com/bnema/flem/go-api/pkg/types"
@@ -24,11 +25,22 @@ import (
 func SuggestMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var jsonInput []int
+		var maxInputLength int = 10
 		if err := c.BindJSON(&jsonInput); err != nil {
 			c.JSON(400, gin.H{
 				"error": "Invalid input",
 			})
 			return
+		}
+
+		// Limit the number of movies to 10
+		if len(jsonInput) > maxInputLength {
+			// Error JSON
+			c.JSON(400, gin.H{
+				"error": fmt.Sprintf("Too many movies. Please limit your input to %d movies", maxInputLength),
+			})
+			return
+
 		}
 
 		summaries, err := handlers.CreateMovieSummariesFromTMDBMovies(app, jsonInput)
@@ -80,20 +92,29 @@ func TranslateMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 
 		// Initialize a slice to hold the movies
 		var movies []types.Movie
+		var mu sync.Mutex
+		var wg sync.WaitGroup
 
 		// Iterate over the movie IDs and retrieve each movie
 		for _, id := range jsonInput {
-			movie, err := handlers.FindMovieByID(app, id)
-			if err != nil {
-				c.JSON(500, gin.H{
-					"error": fmt.Sprintf("Failed to get movie with ID %d", id),
-				})
-				return
-			}
-
-			// Append the retrieved movie to the movies slice
-			movies = append(movies, movie)
+			wg.Add(1)
+			go func(id int) {
+				defer wg.Done()
+				movie, err := handlers.FindMovieByID(app, id)
+				if err != nil {
+					c.JSON(500, gin.H{
+						"error": fmt.Sprintf("Failed to get movie with ID %d", id),
+					})
+					return
+				}
+				// Append the retrieved movie to the movies slice
+				mu.Lock()
+				movies = append(movies, movie)
+				mu.Unlock()
+			}(id)
 		}
+
+		wg.Wait()
 
 		// we translate the movies to the specified language
 		translatedMovies, err := handlers.TranslateMoviesFromGPT3(app, movies, lang)
@@ -103,6 +124,7 @@ func TranslateMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 			})
 			return
 		}
+		fmt.Printf("translatedMovies: %v", translatedMovies)
 
 		c.JSON(200, translatedMovies)
 	}
