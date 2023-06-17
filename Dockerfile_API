@@ -1,10 +1,15 @@
-FROM node:20
+FROM debian:latest
+
+RUN apt-get update && \
+    apt-get install -y ca-certificates && \
+    update-ca-certificates
+
 WORKDIR /app
-EXPOSE 3333
-# Copy the api.js file to the container at /api.js
-RUN npm install cors
 
-COPY ["dist/api.js", "./"]
+COPY ["dist/dysproof-api", "./"]
 
-# Run the api.js when the container launches
-CMD ["node", "api.js"]
+RUN chmod +x ./dysproof-api
+
+EXPOSE 8080
+
+CMD ["./dysproof-api"]
