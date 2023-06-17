@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/bnema/flem/go-api/internal/services"
+	"github.com/bnema/flem/go-api/pkg/services"
 	"github.com/bnema/flem/go-api/pkg/types"
 	"github.com/bnema/flem/go-api/pkg/utils"
 )

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/bnema/flem/go-api/internal/services"
+	"github.com/bnema/flem/go-api/pkg/services"
 	"github.com/bnema/flem/go-api/pkg/types"
 )
 
