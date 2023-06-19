@@ -55,7 +55,11 @@ func VerifyToken(app *types.App) gin.HandlerFunc {
 		}
 
 		session.Values["token"] = refreshResponse.Token // Save refreshed token in session
-		err = session.Save(c.Request, c.Writer)         // Save session data
+		// We ensure that the session cookie is secure and HTTP only
+		session.Options.Secure = true
+		session.Options.HttpOnly = true
+
+		err = session.Save(c.Request, c.Writer) // Save session data
 		if err != nil {
 			c.Set("error", "Failed to save session")
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": c.MustGet("error")})
