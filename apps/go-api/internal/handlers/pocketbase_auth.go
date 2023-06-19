@@ -23,9 +23,6 @@ func GetAuthMethods(app *types.App, provider string) (types.AuthMethodsResponse,
 	if err != nil {
 		return types.AuthMethodsResponse{}, err
 	}
-
-	//fmt print the response
-	fmt.Println("GetAuthMethods: authMethods:", authMethods)
 	// Filter the response to only include the requested provider
 
 	filteredAuthMethods := types.AuthMethodsResponse{}
@@ -42,17 +39,21 @@ func GetAuthMethods(app *types.App, provider string) (types.AuthMethodsResponse,
 // RefreshAuthToken refreshes an existing token
 func RefreshAuthToken(app *types.App, token string) (types.RefreshResponse, error) {
 	refreshResponse := types.RefreshResponse{}
-
-	fmt.Println("RefreshAuthToken: PBAuthRefreshURL:", app.PBAuthRefreshURL)
-	fmt.Println("RefreshAuthToken: token:", token)
-
-	err := utils.PostJSON(app.PBAuthRefreshURL, token, &refreshResponse)
+	req, err := http.NewRequest("POST", app.PBAuthRefreshURL, nil)
 	if err != nil {
-		fmt.Println("RefreshAuthToken: PostJSON error:", err)
+		fmt.Println("RefreshAuthToken: NewRequest error:", err)
 		return types.RefreshResponse{}, err
 	}
 
-	fmt.Println("RefreshAuthToken: refreshResponse:", refreshResponse)
+	// Set the token in the request header
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+
+	err = utils.SendJSONRequest(req, &refreshResponse)
+	if err != nil {
+		fmt.Println("RefreshAuthToken: SendJSONRequest error:", err)
+		return types.RefreshResponse{}, err
+	}
+
 	return refreshResponse, nil
 }
 

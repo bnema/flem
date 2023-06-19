@@ -44,10 +44,6 @@ func LoginRoute(app *types.App, c *gin.Context) {
 	session.Values["codeVerifier"] = authMethods.AuthProviders[0].CodeVerifier
 	session.Values["authUrl"] = authMethods.AuthProviders[0].AuthURL
 	session.Save(c.Request, c.Writer) // Save session data
-	fmt.Println("Saved provider:", session.Values["provider"])
-	fmt.Println("Saved state:", session.Values["state"])
-	fmt.Println("Saved codeVerifier:", session.Values["codeVerifier"])
-	fmt.Println("Saved authUrl:", session.Values["authUrl"])
 
 	c.Redirect(302, authMethods.AuthProviders[0].AuthURL) // Redirect user to OAuth URL
 }
@@ -96,6 +92,9 @@ func RedirectRoute(app *types.App, c *gin.Context) {
 
 	session.Values["token"] = tradeResponse.Token
 	session.Values["userId"] = tradeResponse.Record.Id
+	// force the session to secure and http only
+	session.Options.Secure = true
+	session.Options.HttpOnly = true
 
 	// Save session data
 	err = session.Save(c.Request, c.Writer)

@@ -29,7 +29,7 @@ func TranslateMoviesFromGPT3(app *types.App, movies []types.Movie, lang string) 
 		prompts := []types.GPTPrompt{
 			{
 				Role:    "system",
-				Content: "You act as an API that translates movie details in the specified language: " + lang + ". Please take care to return the translations of all the movies in one JSON array. Each movie should be a separate object within the array. Please make sure to return a properly formatted JSON but do not translate the keys.",
+				Content: "You act as an API that translates movie details in the specified language: " + lang + ". Please take care to return the translations of all the movies in one JSON array. Please make sure to return a properly formatted JSON, do not translate the keys and in the language field, return the full language name in English.",
 			},
 			{
 				Role:    "user",

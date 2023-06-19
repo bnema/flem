@@ -30,6 +30,13 @@ type Movie struct {
 	VoteCount           int                 `json:"vote_count"`
 }
 
+type TranslatedMovie struct {
+	MovieID  int    `json:"movie_id"`
+	Language string `json:"language"`
+	Title    string `json:"title"`
+	Overview string `json:"overview"`
+}
+
 type Genre struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`

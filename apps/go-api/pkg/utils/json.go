@@ -76,3 +76,15 @@ func PostJSON(url string, body interface{}, v interface{}, token ...string) erro
 
 	return nil
 }
+
+func SendJSONRequest(req *http.Request, target interface{}) error {
+	client := &http.Client{}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	return json.NewDecoder(resp.Body).Decode(target)
+}

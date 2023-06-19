@@ -151,6 +151,11 @@ const docTemplate = `{
         },
         "/openai/movies": {
             "post": {
+                "security": [
+                    {
+                        "HTTPOnlySessionCookie": []
+                    }
+                ],
                 "description": "This API receives a list of favorite movie IDs, fetches the corresponding movie summaries,",
                 "consumes": [
                     "application/json"
@@ -203,6 +208,11 @@ const docTemplate = `{
         },
         "/openai/translate": {
             "post": {
+                "security": [
+                    {
+                        "HTTPOnlySessionCookie": []
+                    }
+                ],
                 "description": "This API receives a list of movie IDs and translates the corresponding movie information to the specified language.",
                 "consumes": [
                     "application/json"
@@ -434,6 +444,46 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/whoami": {
+            "get": {
+                "security": [
+                    {
+                        "HTTPOnlySessionCookie": []
+                    }
+                ],
+                "description": "This API retrieves information about the currently authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get current user information",
+                "responses": {
+                    "200": {
+                        "description": "Successfully fetched user data",
+                        "schema": {
+                            "$ref": "#/definitions/types.PocketBaseUserRecord"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request - No userId or token in session",
+                        "schema": {
+                            "$ref": "#/definitions/types.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error - Failed to get user from PocketBase",
+                        "schema": {
+                            "$ref": "#/definitions/types.Error"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -549,6 +599,44 @@ const docTemplate = `{
                 },
                 "vote_count": {
                     "type": "integer"
+                }
+            }
+        },
+        "types.PocketBaseUserRecord": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "collectionId": {
+                    "type": "string"
+                },
+                "collectionName": {
+                    "type": "string"
+                },
+                "created": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "emailVisibility": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "verified": {
+                    "type": "boolean"
                 }
             }
         },

@@ -21,6 +21,7 @@ import (
 // @Success 200 {array} types.Movie "Successful retrieval of movie suggestions"
 // @Failure 400 {object} types.Error "Invalid input"
 // @Failure 500 {object} types.Error "Failed to get movie summaries or suggestions"
+// @Security HTTPOnlySessionCookie
 // @Router /openai/movies [post]
 func SuggestMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -75,6 +76,7 @@ func SuggestMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 // @Success 200 {array} types.Movie "Successful translation of movies"
 // @Failure 400 {object} types.Error "Invalid input"
 // @Failure 500 {object} types.Error "Failed to get movie with ID"
+// @Security HTTPOnlySessionCookie
 // @Router /openai/translate [post]
 func TranslateMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
