@@ -33,6 +33,12 @@ func SessionMiddleware(app *types.App) gin.HandlerFunc {
 func VerifyToken(app *types.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := c.MustGet("session").(*sessions.Session)
+		if session == nil {
+			// No session
+			c.Set("error", "No session, please login")
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": c.MustGet("error")})
+			return
+		}
 		tokenValue, ok := session.Values["token"]
 		if !ok {
 			// No token in session
