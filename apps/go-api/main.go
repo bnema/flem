@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/url"
 	"os"
@@ -50,6 +51,7 @@ func NewApp() *types.App {
 	app.PBTradeURL = tradeUrl.String()
 
 	oauthRedirectURL, ok := os.LookupEnv("OAUTH_REDIRECT_URL")
+	fmt.Println("Actual oauth redirect url:" + oauthRedirectURL)
 	if !ok {
 		panic("OAUTH_REDIRECT_URL environment variable is not set")
 	}
@@ -66,7 +68,11 @@ func NewApp() *types.App {
 
 // @BasePath /api/v1
 func main() {
-	gin.SetMode(gin.DebugMode) // Force debug mode
+	if os.Getenv("ENV") == "dev" {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
 	app := NewApp()
 
