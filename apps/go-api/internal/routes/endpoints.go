@@ -72,6 +72,16 @@ func WhoAmI(app *types.App) gin.HandlerFunc {
 	}
 }
 
+// ListMoviesCollection returns a list of movies from a specified collection.
+// @Summary Get list of movies from movie collection
+// @Description This API retrieves a list of movies from movie collection
+// @Tags Movies
+// @Accept  json
+// @Produce  json
+// @Security HTTPOnlySessionCookie
+// @Success 200 {array} types.Movie "Successfully fetched movie collection"
+// @Failure 500 {object} types.Error "Internal server error - Failed to get token or movies collection"
+// @Router /movies [get]
 func ListMoviesCollection(app *types.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Log as admin to pb and get the token
@@ -86,8 +96,6 @@ func ListMoviesCollection(app *types.App) gin.HandlerFunc {
 
 		token := adminAuthResponse.Token
 		collectionUrl := app.MoviesCollectionURL
-		fmt.Println("collectionUrl:", collectionUrl)
-		fmt.Println("token:", token)
 
 		var collection types.CollectionResponse
 		err = services.PBGetCollection(collectionUrl, token, &collection)
