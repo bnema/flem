@@ -74,3 +74,36 @@ func PBGetCollection(collectionUrl string, token string, out interface{}) error 
 
 	return nil
 }
+
+// PBSaveItemToCollection saves an item to a collection in PocketBase
+func PBSaveItemToCollection(collectionUrl string, token string, item interface{}, out interface{}) error {
+	err := utils.PostJSON(collectionUrl, item, out)
+	if err != nil {
+		fmt.Println("PBSaveItemToCollection: PostJSON failed", err)
+		return err
+	}
+
+	return nil
+}
+
+// PBUpdateItemInCollection updates an item in a collection in PocketBase
+func PBUpdateItemInCollection(collectionUrl string, token string, item interface{}, out interface{}) error {
+	err := utils.PutJSON(collectionUrl, item, out)
+	if err != nil {
+		fmt.Println("PBUpdateItemInCollection: PutJSON failed", err)
+		return err
+	}
+
+	return nil
+}
+
+// PBDeleteItemFromCollection deletes an item from a collection in PocketBase
+func PBDeleteItemFromCollection(collectionUrl string, token string, out interface{}) error {
+	err := utils.Delete(collectionUrl, out)
+	if err != nil {
+		fmt.Println("PBDeleteItemFromCollection: Delete failed", err)
+		return err
+	}
+
+	return nil
+}

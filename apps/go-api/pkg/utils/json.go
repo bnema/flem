@@ -83,6 +83,86 @@ func PostJSON(url string, body interface{}, v interface{}, token ...string) erro
 	return nil
 }
 
+// PutJSON sends a PUT request to a given URL with a JSON body, and decodes the response JSON into 'v' interface
+func PutJSON(url string, body interface{}, v interface{}, token ...string) error {
+	jsonBody, err := json.Marshal(body)
+	if err != nil {
+		return fmt.Errorf("failed to marshal JSON: %w", err)
+	}
+
+	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	if len(token) > 0 {
+		req.Header.Set("Authorization", "Bearer "+token[0])
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to put JSON: %w", err)
+	}
+	fmt.Println("PutJSONWithBearerToken: response status code:", resp.StatusCode)
+
+	// Read the response body
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err // handle error
+	}
+
+	// Convert body to string and print it
+	bodyString := string(bodyBytes)
+	fmt.Println("Response body:", bodyString)
+
+	// Decode the body into 'v'
+	err = json.Unmarshal(bodyBytes, v)
+	if err != nil {
+		return fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	return nil
+}
+
+// Delete sends a DELETE request to a given URL and decodes the response JSON into 'v' interface
+func Delete(url string, v interface{}, token ...string) error {
+	req, err := http.NewRequest("DELETE", url, nil)
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+
+	if len(token) > 0 {
+		req.Header.Set("Authorization", "Bearer "+token[0])
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to delete: %w", err)
+	}
+	fmt.Println("DeleteWithBearerToken: response status code:", resp.StatusCode)
+
+	// Read the response body
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err // handle error
+	}
+
+	// Convert body to string and print it
+	bodyString := string(bodyBytes)
+	fmt.Println("Response body:", bodyString)
+
+	// Decode the body into 'v'
+	err = json.Unmarshal(bodyBytes, v)
+	if err != nil {
+		return fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	return nil
+}
+
 func SendJSONRequest(req *http.Request, target interface{}) error {
 	client := &http.Client{}
 
