@@ -45,6 +45,7 @@ func SuggestMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 		}
 
 		summaries, err := handlers.CreateMovieSummariesFromTMDBMovies(app, jsonInput)
+		fmt.Println(summaries)
 		if err != nil {
 			c.JSON(500, gin.H{
 				// give more details in console
@@ -53,6 +54,7 @@ func SuggestMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 			return
 		}
 		movies, err := handlers.SuggestMoviesFromGPT3(app, summaries)
+		fmt.Println(movies)
 		if err != nil {
 			c.JSON(500, gin.H{
 				"error": "Failed to get movie suggestions",

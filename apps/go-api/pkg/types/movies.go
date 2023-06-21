@@ -1,6 +1,10 @@
 package types
 
+// Each movie as a unique ID because we can have multiple movies but translated in different languages
 type Movie struct {
+	ID                  string              `json:"id"`
+	TmdbID              int                 `json:"tmdb_id"`
+	ImdbID              string              `json:"imdb_id"`
 	Language            string              `json:"language"`
 	Adult               bool                `json:"adult"`
 	BackdropPath        string              `json:"backdrop_path"`
@@ -9,8 +13,6 @@ type Movie struct {
 	Budget              int                 `json:"budget"`
 	Genres              []Genre             `json:"genres"`
 	Homepage            string              `json:"homepage"`
-	ID                  int                 `json:"id"`
-	ImdbID              string              `json:"imdb_id"`
 	OriginalLanguage    string              `json:"original_language"`
 	OriginalTitle       string              `json:"original_title"`
 	Overview            string              `json:"overview"`
@@ -30,11 +32,34 @@ type Movie struct {
 	VoteCount           int                 `json:"vote_count"`
 }
 
-type TranslatedMovie struct {
-	MovieID  int    `json:"movie_id"`
-	Language string `json:"language"`
-	Title    string `json:"title"`
-	Overview string `json:"overview"`
+type TmdbMovie struct {
+	ID                  int                 `json:"id"`
+	ImdbID              string              `json:"imdb_id"`
+	Language            string              `json:"language"`
+	Adult               bool                `json:"adult"`
+	BackdropPath        string              `json:"backdrop_path"`
+	BelongsToCollection *interface{}        `json:"belongs_to_collection"`
+	Director            string              `json:"director"`
+	Budget              int                 `json:"budget"`
+	Genres              []Genre             `json:"genres"`
+	Homepage            string              `json:"homepage"`
+	OriginalLanguage    string              `json:"original_language"`
+	OriginalTitle       string              `json:"original_title"`
+	Overview            string              `json:"overview"`
+	Popularity          float64             `json:"popularity"`
+	PosterPath          string              `json:"poster_path"`
+	ProductionCompanies []ProductionCompany `json:"production_companies"`
+	ProductionCountries []ProductionCountry `json:"production_countries"`
+	ReleaseDate         string              `json:"release_date"`
+	Revenue             int                 `json:"revenue"`
+	Runtime             int                 `json:"runtime"`
+	SpokenLanguages     []SpokenLanguage    `json:"spoken_languages"`
+	Status              string              `json:"status"`
+	Tagline             string              `json:"tagline"`
+	Title               string              `json:"title"`
+	Video               bool                `json:"video"`
+	VoteAverage         float64             `json:"vote_average"`
+	VoteCount           int                 `json:"vote_count"`
 }
 
 type Genre struct {
@@ -69,7 +94,7 @@ type Message struct {
 }
 
 type SummaryItemMovie struct {
-	ID          int      `json:"id"`
+	TmdbID      int      `json:"id"`
 	Title       string   `json:"title"`
 	ReleaseDate string   `json:"release_date"`
 	Genres      []string `json:"genres"` // Changez ceci

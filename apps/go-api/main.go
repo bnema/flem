@@ -61,6 +61,17 @@ func NewApp() *types.App {
 	}
 	app.PBUserURL = PBUserURL.String()
 
+	// PocketBase Admin auth
+	app.PBAuthAdmin = os.Getenv("PB_AUTH_ADMIN")
+	app.PBAuthAdminPassword = os.Getenv("PB_AUTH_ADMIN_PASSWORD")
+	// PocketBase collections
+	// Movies :
+	MoviesCollectionURL, err := baseUrl.Parse("/api/collections/movies/records")
+	if err != nil {
+		panic(err)
+	}
+	app.MoviesCollectionURL = MoviesCollectionURL.String()
+
 	return app
 }
 

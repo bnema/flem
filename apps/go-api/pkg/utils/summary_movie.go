@@ -11,7 +11,7 @@ func SummaryFromMovie(movie types.Movie) types.SummaryItemMovie {
 		genres[i] = g.Name
 	}
 	summaryMovie := types.SummaryItemMovie{
-		ID:          movie.ID,
+		TmdbID:      movie.TmdbID,
 		Title:       movie.Title,
 		ReleaseDate: movie.ReleaseDate,
 		Genres:      genres,

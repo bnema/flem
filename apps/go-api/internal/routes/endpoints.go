@@ -2,9 +2,11 @@
 package routes
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/bnema/flem/go-api/internal/handlers"
+	"github.com/bnema/flem/go-api/pkg/services"
 	"github.com/bnema/flem/go-api/pkg/types"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
@@ -66,5 +68,36 @@ func WhoAmI(app *types.App) gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, user)
+	}
+}
+
+func ListMoviesCollection(app *types.App) gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		// Log as admin to pb and get the token
+		adminAuthResponse, err := services.PBAdminAuth(app)
+		if err != nil {
+			fmt.Println("ListMoviesCollection: Failed to get token", err)
+			c.JSON(http.StatusInternalServerError, map[string]string{
+				"error": "Failed to get token",
+			})
+			return
+		}
+
+		token := adminAuthResponse.Token
+
+		collectionUrl := app.MoviesCollectionURL
+		fmt.Println("collectionUrl:", collectionUrl)
+		fmt.Println("token:", token)
+		movies, err := services.PBGetCollection(collectionUrl, app, token)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, map[string]string{
+				"error": "Failed to get movies collection",
+			})
+			return
+		}
+		fmt.Println("movies:", movies)
+
+		c.JSON(http.StatusOK, movies)
 	}
 }

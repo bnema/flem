@@ -30,7 +30,7 @@ func SuggestMoviesFromGPT3(app *types.App, summaries []types.SummaryItemMovie) (
 
 	[
 		{
-			"id": (only if you know the themoviedb.org one, otherwise leave it out)),
+			"tmdb_id": (only if you know the themoviedb.org one, otherwise leave it out)),
 			"title": "The Matrix",
 			"release_date": "1999-03-30",
 			"genres": [
@@ -39,7 +39,7 @@ func SuggestMoviesFromGPT3(app *types.App, summaries []types.SummaryItemMovie) (
 			]
 		},
 		{
-			"id": (only if you know the themoviedb.org one, otherwise leave it out)),
+			"tmdb_id": (only if you know the themoviedb.org one, otherwise leave it out)),
 			"title": "Lord of the Rings",
 			"release_date": "2001-12-19",
 			"genres": [

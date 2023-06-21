@@ -41,7 +41,7 @@ func TestGetMoviesFromGPT3(t *testing.T) {
 
 	// Check that each movie has the expected properties
 	for _, movie := range movies {
-		if movie.ID != 0 && movie.ID != 1 {
+		if movie.TmdbID != 0 && movie.ID != 1 {
 			t.Errorf("GetMoviesFromGPT3 returned a movie with an unexpected ID: %d", movie.ID)
 		}
 		if movie.Title == "" {

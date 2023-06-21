@@ -96,3 +96,12 @@ type PocketBaseUserMeta struct {
 	RefreshToken string `json:"refreshToken"`
 	RawUser      string `json:"rawUser"`
 }
+
+type CollectionResponse struct {
+	Records []Record `json:"records"`
+}
+
+type Record struct {
+	ID   string                 `json:"id"`
+	Data map[string]interface{} `json:"data"` // You can replace this with a more specific struct if you know the schema
+}

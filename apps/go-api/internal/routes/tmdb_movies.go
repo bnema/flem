@@ -1,12 +1,11 @@
 package routes
 
 import (
-	"fmt"
 	"net/url"
 
+	"github.com/bnema/flem/go-api/internal/handlers"
 	"github.com/bnema/flem/go-api/pkg/services"
 	"github.com/bnema/flem/go-api/pkg/types"
-	"github.com/bnema/flem/go-api/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -51,38 +50,30 @@ func TMDBMovieByTitleRouteHandler(c *gin.Context) {
 // @Success 200 {array} types.Movie
 // @Failure 500 {object} types.Error
 // @Router /tmdb/movies/post/ids [post]
-func TMDBMoviesByIDSRouteHandler(c *gin.Context) {
-	var jsonInput []int
-	if err := c.BindJSON(&jsonInput); err != nil {
-		c.JSON(400, gin.H{
-			"error": "Invalid input",
-		})
-		return
-	}
-
-	// Iterate over ids in the jsonInput
-	for _, id := range jsonInput {
-		var movie types.Movie
-		// Declare a slice to hold summary movies
-		var summaryMovies []types.SummaryItemMovie
-		err := services.CallTMDBApi(fmt.Sprintf("/movie/%d", id), url.Values{}, &movie)
-		if err != nil {
-			c.JSON(500, gin.H{
-				"error": "Something went wrong",
+func TMDBMoviesByIDSRouteHandler(app *types.App) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var jsonInput []int
+		if err := c.BindJSON(&jsonInput); err != nil {
+			c.JSON(400, gin.H{
+				"error": "Invalid input",
 			})
 			return
-		} else if services.ValidateMovieData(movie) != nil {
-			// we want another movie
-			continue
 		}
-		// Create summary for each movie
-		summaryMovie := utils.SummaryFromMovie(movie)
-		summaryMovies = append(summaryMovies, summaryMovie)
 
-		// Return summary movies as fmt
-		fmt.Println(summaryMovies)
+		var movies []types.Movie
+		// Iterate over ids in the jsonInput
+		for _, id := range jsonInput {
+			movie, err := handlers.FindMovieByID(app, id)
+			if err != nil {
+				c.JSON(500, gin.H{
+					"error": "Something went wrong",
+				})
+				return
+			}
+			movies = append(movies, movie)
+		}
 
-		c.JSON(200, movie)
+		c.JSON(200, movies)
 	}
 }
 

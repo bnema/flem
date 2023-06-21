@@ -11,26 +11,32 @@ import (
 
 // GetJSON sends a GET request to a given URL and decodes the response JSON into 'v' interface
 func GetJSON(req *http.Request, v interface{}) error {
+	fmt.Println("GetJSON: start")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
+		fmt.Println("GetJSON: Failed to do request", err)
 		return err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		fmt.Println("GetJSON: received non 200 response code", resp.StatusCode)
 		return errors.New("received non 200 response code")
 	}
 
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
+		fmt.Println("GetJSON: Failed to read all body", err)
 		return err
 	}
 
 	err = json.Unmarshal(bodyBytes, v)
 	if err != nil {
+		fmt.Println("GetJSON: Failed to unmarshal body", err)
 		return err
 	}
 
+	fmt.Println("GetJSON: end")
 	return nil
 }
 

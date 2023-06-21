@@ -44,15 +44,15 @@ func CallTMDBApi(path string, query url.Values, result interface{}) error {
 }
 
 func ValidateMovieData(movie types.Movie) error {
-	if movie.ID == 0 || movie.Title == "" || movie.Overview == "" || movie.PosterPath == "" || len(movie.Genres) == 0 {
-		return fmt.Errorf("movie %d does not have an id, title, overview, poster path or genres", movie.ID)
+	if movie.TmdbID == 0 || movie.Title == "" || movie.Overview == "" || movie.PosterPath == "" || len(movie.Genres) == 0 {
+		return fmt.Errorf("movie %d does not have an id, title, overview, poster path or genres", movie.TmdbID)
 	}
 	if movie.Adult {
-		return fmt.Errorf("movie %d is an adult movie", movie.ID)
+		return fmt.Errorf("movie %d is an adult movie", movie.TmdbID)
 	}
 	blacklistWords := utils.CheckBlacklist(movie, blacklist)
 	if len(blacklistWords) > 0 {
-		return fmt.Errorf("movie %d contains the following blacklisted words: %s", movie.ID, strings.Join(blacklistWords, ", "))
+		return fmt.Errorf("movie %d contains the following blacklisted words: %s", movie.TmdbID, strings.Join(blacklistWords, ", "))
 	}
 	return nil
 }
