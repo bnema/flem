@@ -89,6 +89,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/movies": {
+            "get": {
+                "security": [
+                    {
+                        "HTTPOnlySessionCookie": []
+                    }
+                ],
+                "description": "This API retrieves a list of movies from movie collection",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Movies"
+                ],
+                "summary": "Get list of movies from movie collection",
+                "responses": {
+                    "200": {
+                        "description": "Successfully fetched movie collection",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/types.Movie"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error - Failed to get token or movies collection",
+                        "schema": {
+                            "$ref": "#/definitions/types.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/oauth-redirect": {
             "get": {
                 "description": "This route handles the '/oauth-redirect' endpoint and finalizes the OAuth authentication process. After successful authentication, the session is updated with a token and a userId.",
@@ -532,7 +569,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "imdb_id": {
                     "type": "string"
@@ -590,6 +627,9 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string"
+                },
+                "tmdb_id": {
+                    "type": "integer"
                 },
                 "video": {
                     "type": "boolean"

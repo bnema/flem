@@ -30,7 +30,7 @@ definitions:
       homepage:
         type: string
       id:
-        type: integer
+        type: string
       imdb_id:
         type: string
       language:
@@ -69,6 +69,8 @@ definitions:
         type: string
       title:
         type: string
+      tmdb_id:
+        type: integer
       video:
         type: boolean
       vote_average:
@@ -179,6 +181,29 @@ paths:
       summary: Initiate OAuth authentication
       tags:
       - OAuth
+  /movies:
+    get:
+      consumes:
+      - application/json
+      description: This API retrieves a list of movies from movie collection
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully fetched movie collection
+          schema:
+            items:
+              $ref: '#/definitions/types.Movie'
+            type: array
+        "500":
+          description: Internal server error - Failed to get token or movies collection
+          schema:
+            $ref: '#/definitions/types.Error'
+      security:
+      - HTTPOnlySessionCookie: []
+      summary: Get list of movies from movie collection
+      tags:
+      - Movies
   /oauth-redirect:
     get:
       consumes:
