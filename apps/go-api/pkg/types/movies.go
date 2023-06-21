@@ -1,8 +1,14 @@
 package types
 
+import "time"
+
 // Each movie as a unique ID because we can have multiple movies but translated in different languages
 type Movie struct {
 	ID                  string              `json:"id"`
+	collectionId        string              `json:"collectionId"`
+	collectionName      string              `json:"collectionName"`
+	created             time.Time           `json:"created"`
+	updated             time.Time           `json:"updated"`
 	TmdbID              int                 `json:"tmdb_id"`
 	ImdbID              string              `json:"imdb_id"`
 	Language            string              `json:"language"`

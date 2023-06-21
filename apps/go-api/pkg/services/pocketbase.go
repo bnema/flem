@@ -56,26 +56,25 @@ func PBAdminAuth(app *types.App) (AdminAuthResponse, error) {
 }
 
 // PBGetCollection retrieves a collection (including items) from PocketBase
-func PBGetCollection(collectionUrl string, app *types.App, token string) (types.CollectionResponse, error) {
+func PBGetCollection(collectionUrl string, token string, out interface{}) error {
 	fmt.Println("PBGetCollection: start")
 
-	collectionResponse := types.CollectionResponse{}
 	req, err := http.NewRequest("GET", collectionUrl, nil)
 	if err != nil {
 		fmt.Println("PBGetCollection: Failed to create request", err)
-		return types.CollectionResponse{}, err
+		return err
 	}
 
 	// Add Authorization header with token
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 	fmt.Println("PBGetCollection: request created, starting GetJSON")
 
-	err = utils.GetJSON(req, &collectionResponse)
+	err = utils.GetJSON(req, out)
 	if err != nil {
 		fmt.Println("PBGetCollection: GetJSON failed", err)
-		return types.CollectionResponse{}, err
+		return err
 	}
 
 	fmt.Println("PBGetCollection: end")
-	return collectionResponse, nil
+	return nil
 }

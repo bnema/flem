@@ -98,10 +98,14 @@ type PocketBaseUserMeta struct {
 }
 
 type CollectionResponse struct {
-	Records []Record `json:"records"`
+	Items      []interface{} `json:"items"`
+	Page       int           `json:"page"`
+	PerPage    int           `json:"perPage"`
+	TotalItems int           `json:"totalItems"`
+	TotalPages int           `json:"totalPages"`
 }
 
 type Record struct {
 	ID   string                 `json:"id"`
-	Data map[string]interface{} `json:"data"` // You can replace this with a more specific struct if you know the schema
+	Data map[string]interface{} `json:"data"`
 }

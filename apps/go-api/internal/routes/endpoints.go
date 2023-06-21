@@ -2,6 +2,7 @@
 package routes
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -73,7 +74,6 @@ func WhoAmI(app *types.App) gin.HandlerFunc {
 
 func ListMoviesCollection(app *types.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
-
 		// Log as admin to pb and get the token
 		adminAuthResponse, err := services.PBAdminAuth(app)
 		if err != nil {
@@ -85,19 +85,45 @@ func ListMoviesCollection(app *types.App) gin.HandlerFunc {
 		}
 
 		token := adminAuthResponse.Token
-
 		collectionUrl := app.MoviesCollectionURL
 		fmt.Println("collectionUrl:", collectionUrl)
 		fmt.Println("token:", token)
-		movies, err := services.PBGetCollection(collectionUrl, app, token)
+
+		var collection types.CollectionResponse
+		err = services.PBGetCollection(collectionUrl, token, &collection)
 		if err != nil {
+			fmt.Println("ListMoviesCollection: Failed to get movies collection", err)
 			c.JSON(http.StatusInternalServerError, map[string]string{
 				"error": "Failed to get movies collection",
 			})
 			return
 		}
-		fmt.Println("movies:", movies)
 
-		c.JSON(http.StatusOK, movies)
+		var movies []types.Movie
+		for _, item := range collection.Items {
+			movieData, ok := item.(map[string]interface{})
+			if !ok {
+				fmt.Println("Failed to convert")
+				continue
+			}
+
+			// Convert the map to a Movie
+			jsonData, err := json.Marshal(movieData)
+			if err != nil {
+				fmt.Println("Failed to marshal movieData to json")
+				continue
+			}
+
+			var movie types.Movie
+			err = json.Unmarshal(jsonData, &movie)
+			if err != nil {
+				fmt.Println("Failed to unmarshal jsonData to movie")
+				continue
+			}
+
+			movies = append(movies, movie)
+		}
+
+		c.JSON(http.StatusOK, movies) // send the movies to the client
 	}
 }
