@@ -70,6 +70,8 @@ func TMDBMoviesByIDSRouteHandler(app *types.App) gin.HandlerFunc {
 				})
 				return
 			}
+			// Save each movie in the collection of movies
+			handlers.SaveMovieToPocketbase(app, movie)
 			movies = append(movies, movie)
 		}
 

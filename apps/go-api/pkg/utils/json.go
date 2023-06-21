@@ -127,7 +127,7 @@ func PutJSON(url string, body interface{}, v interface{}, token ...string) error
 }
 
 // Delete sends a DELETE request to a given URL and decodes the response JSON into 'v' interface
-func Delete(url string, v interface{}, token ...string) error {
+func DeleteJSON(url string, v interface{}, token ...string) error {
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
@@ -163,6 +163,7 @@ func Delete(url string, v interface{}, token ...string) error {
 	return nil
 }
 
+// SendJSONRequest sends a JSON request to a given URL and decodes the response JSON into 'target' interface
 func SendJSONRequest(req *http.Request, target interface{}) error {
 	client := &http.Client{}
 
