@@ -1,9 +1,11 @@
 package services
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/bnema/flem/go-api/pkg/types"
 	"github.com/bnema/flem/go-api/pkg/utils"
@@ -51,7 +53,7 @@ func PBAdminAuth(app *types.App) (AdminAuthResponse, error) {
 	if err != nil {
 		return AdminAuthResponse{}, err
 	}
-	fmt.Println("adminAuthResponse:", adminAuthResponse)
+
 	return adminAuthResponse, nil
 }
 
@@ -76,34 +78,48 @@ func PBGetCollection(collectionUrl string, token string, out interface{}) error 
 }
 
 // PBSaveItemToCollection saves an item to a collection in PocketBase
-func PBSaveItemToCollection(collectionUrl string, token string, item interface{}) error {
-	err := utils.PostJSON(collectionUrl, item, nil)
+func PBSaveItemToCollection(collectionUrl string, token string, item interface{}) (interface{}, error) {
+	var savedItem interface{}
+	err := utils.PostJSON(collectionUrl, item, &savedItem, token)
 	if err != nil {
-		fmt.Println("PBSaveItemToCollection: PostJSON failed", err)
-		return err
+		var dbError types.PBCollectionError
+		// Try to unmarshal the error into a DBError
+		if jsonErr := json.Unmarshal([]byte(err.Error()), &dbError); jsonErr == nil {
+			errMessages := []string{}
+			for key, value := range dbError.Data {
+				message, ok := value["message"].(string) // Assert message to string
+				if ok {
+					errMessages = append(errMessages, fmt.Sprintf("%s: %s", key, message))
+				}
+			}
+			fmt.Printf("PBSaveItemToCollection: Failed with code: %s. Errors: %s\n", dbError.Code, strings.Join(errMessages, ", "))
+			return nil, nil // return nil error to continue the process if needed
+		} else {
+			fmt.Println("PBSaveItemToCollection: PostJSON failed", err)
+			return nil, err
+		}
 	}
-
-	return nil
+	return savedItem, nil
 }
 
-// PBUpdateItemInCollection updates an item in a collection in PocketBase
-func PBUpdateItemInCollection(collectionUrl string, token string, item interface{}, out interface{}) error {
-	err := utils.PutJSON(collectionUrl, item, out)
-	if err != nil {
-		fmt.Println("PBUpdateItemInCollection: PutJSON failed", err)
-		return err
-	}
+// // PBUpdateItemInCollection updates an item in a collection in PocketBase
+// func PBUpdateItemInCollection(collectionUrl string, token string, item interface{}, out interface{}) error {
+// 	err := utils.PutJSON(collectionUrl, item, out)
+// 	if err != nil {
+// 		fmt.Println("PBUpdateItemInCollection: PutJSON failed", err)
+// 		return err
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
-// PBDeleteItemFromCollection deletes an item from a collection in PocketBase
-func PBDeleteItemFromCollection(collectionUrl string, token string, out interface{}) error {
-	err := utils.DeleteJSON(collectionUrl, out)
-	if err != nil {
-		fmt.Println("PBDeleteItemFromCollection: Delete failed", err)
-		return err
-	}
+// // PBDeleteItemFromCollection deletes an item from a collection in PocketBase
+// func PBDeleteItemFromCollection(collectionUrl string, token string, out interface{}) error {
+// 	err := utils.DeleteJSON(collectionUrl, out)
+// 	if err != nil {
+// 		fmt.Println("PBDeleteItemFromCollection: Delete failed", err)
+// 		return err
+// 	}
 
-	return nil
-}
+// 	return nil
+// }

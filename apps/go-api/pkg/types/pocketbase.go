@@ -109,3 +109,9 @@ type Record struct {
 	ID   string                 `json:"id"`
 	Data map[string]interface{} `json:"data"`
 }
+
+type PBCollectionError struct {
+	Code    string                            `json:"code"`
+	Data    map[string]map[string]interface{} `json:"data"`
+	Message string                            `json:"message"`
+}

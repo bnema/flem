@@ -32,13 +32,14 @@ func SaveMovieToPocketbase(app *types.App, movie types.Movie) error {
 	}
 
 	// Save the movie to the collection
-	err = services.PBSaveItemToCollection(collectionUrl, token, item)
+	savedItem, err := services.PBSaveItemToCollection(collectionUrl, token, item)
 	if err != nil {
-		fmt.Println("SaveMovieToPocketbase: Failed to save movie to collection", err)
 		return fmt.Errorf("failed to save movie to collection: %w", err)
 	}
 
-	fmt.Println("Movie saved successfully to the collection")
+	if savedItem != nil {
+		fmt.Println("Movie saved successfully to the collection. Saved item:")
+	}
 
 	return nil
 }

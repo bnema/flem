@@ -7,7 +7,7 @@ func ConvertTmdbMovieToMovie(tmdbMovie types.TmdbMovie) types.Movie {
 		ID:                  "", // set your own ID here
 		TmdbID:              tmdbMovie.ID,
 		ImdbID:              tmdbMovie.ImdbID,
-		Language:            tmdbMovie.Language,
+		Language:            "english",
 		Adult:               tmdbMovie.Adult,
 		BackdropPath:        tmdbMovie.BackdropPath,
 		BelongsToCollection: tmdbMovie.BelongsToCollection,

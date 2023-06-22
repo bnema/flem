@@ -11,7 +11,6 @@ import (
 
 // GetJSON sends a GET request to a given URL and decodes the response JSON into 'v' interface
 func GetJSON(req *http.Request, v interface{}) error {
-	fmt.Println("GetJSON: start")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		fmt.Println("GetJSON: Failed to do request", err)
@@ -35,8 +34,6 @@ func GetJSON(req *http.Request, v interface{}) error {
 		fmt.Println("GetJSON: Failed to unmarshal body", err)
 		return err
 	}
-
-	fmt.Println("GetJSON: end")
 	return nil
 }
 
@@ -62,7 +59,8 @@ func PostJSON(url string, body interface{}, v interface{}, token ...string) erro
 	if err != nil {
 		return fmt.Errorf("failed to post JSON: %w", err)
 	}
-	fmt.Println("PostJSONWithBearerToken: response status code:", resp.StatusCode)
+
+	defer resp.Body.Close()
 
 	// Read the response body
 	bodyBytes, err := io.ReadAll(resp.Body)
@@ -70,9 +68,10 @@ func PostJSON(url string, body interface{}, v interface{}, token ...string) erro
 		return err // handle error
 	}
 
-	// Convert body to string and print it
-	bodyString := string(bodyBytes)
-	fmt.Println("Response body:", bodyString)
+	// Check if the HTTP status code signifies an error
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return fmt.Errorf("received http status code: %d, body: %s", resp.StatusCode, string(bodyBytes))
+	}
 
 	// Decode the body into 'v'
 	err = json.Unmarshal(bodyBytes, v)
@@ -84,7 +83,7 @@ func PostJSON(url string, body interface{}, v interface{}, token ...string) erro
 }
 
 // PutJSON sends a PUT request to a given URL with a JSON body, and decodes the response JSON into 'v' interface
-func PutJSON(url string, body interface{}, v interface{}, token ...string) error {
+func PutJSON(url string, body interface{}, v interface{}, token *string) error {
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
 		return fmt.Errorf("failed to marshal JSON: %w", err)
@@ -96,8 +95,8 @@ func PutJSON(url string, body interface{}, v interface{}, token ...string) error
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	if len(token) > 0 {
-		req.Header.Set("Authorization", "Bearer "+token[0])
+	if token != nil {
+		req.Header.Set("Authorization", "Bearer "+*token)
 	}
 
 	client := &http.Client{}

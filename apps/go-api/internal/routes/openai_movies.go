@@ -130,6 +130,11 @@ func TranslateMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 		}
 		fmt.Printf("translatedMovies: %v", translatedMovies)
 
+		// set translatedmovie as Movie type
+		var movie types.Movie
+		movie = translatedMovies[0]
+		handlers.SaveMovieToPocketbase(app, movie)
+
 		c.JSON(200, translatedMovies)
 	}
 }
