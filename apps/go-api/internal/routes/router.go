@@ -22,7 +22,7 @@ func SetupRouter(app *types.App) *gin.Engine {
 			whoAmIRoute.GET("", WhoAmI(app))
 		}
 		movieRoute := v1.Group("/movies")
-		// movieRoute.Use(middlewares.VerifyToken(app))
+		movieRoute.Use(middlewares.VerifyToken(app))
 		{
 			movieRoute.GET("", ListMoviesCollection(app))
 		}
@@ -42,7 +42,7 @@ func SetupRouter(app *types.App) *gin.Engine {
 			tmdb.GET("/movies/random10", TMDBRandomMoviesRouteHandler)
 		}
 		openai := v1.Group("/openai")
-		// openai.Use(middlewares.VerifyToken(app))
+		openai.Use(middlewares.VerifyToken(app))
 		{
 			openai.POST("/movies", SuggestMoviesFromGPT3RouteHandler(app))
 			openai.POST("/translate", TranslateMoviesFromGPT3RouteHandler(app))

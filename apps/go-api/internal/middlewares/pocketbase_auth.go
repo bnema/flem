@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/bnema/flem/go-api/internal/handlers"
 	"github.com/bnema/flem/go-api/pkg/types"
@@ -32,6 +33,13 @@ func SessionMiddleware(app *types.App) gin.HandlerFunc {
 // VerifyToken is a middleware that verifies the validity of a token
 func VerifyToken(app *types.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// Check if the environment is development.
+		// If yes, then skip middleware processing and call next middleware/handler
+		if os.Getenv("ENV") == "dev" {
+			c.Next()
+			return
+		}
+
 		session := c.MustGet("session").(*sessions.Session)
 		if session == nil {
 			// No session
