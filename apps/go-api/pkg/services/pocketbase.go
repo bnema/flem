@@ -102,6 +102,34 @@ func PBSaveItemToCollection(collectionUrl string, token string, item interface{}
 	return savedItem, nil
 }
 
+// PBGetItemFromCollection retrieves an item from a collection in PocketBase
+func PBGetItemFromCollection(collectionUrl string, token string, filter string) (*types.CollectionResponse, error) {
+	var resp types.CollectionResponse
+
+	// Build the URL with the filters
+	url := fmt.Sprintf("%s?filter=%s", collectionUrl, url.QueryEscape(filter))
+	fmt.Println("PBGetItemFromCollection: url", url)
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		fmt.Println("PBGetItemFromCollection: Failed to create request", err)
+		return nil, err
+	}
+
+	// Add Authorization header with token
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
+	// fmt token
+	fmt.Println("PBGetItemFromCollection: token", token)
+
+	err = utils.GetJSON(req, &resp)
+	if err != nil {
+		fmt.Println("PBGetItemFromCollection: GetJSON failed", err)
+		return nil, err
+	}
+
+	return &resp, nil
+}
+
 // // PBUpdateItemInCollection updates an item in a collection in PocketBase
 // func PBUpdateItemInCollection(collectionUrl string, token string, item interface{}, out interface{}) error {
 // 	err := utils.PutJSON(collectionUrl, item, out)

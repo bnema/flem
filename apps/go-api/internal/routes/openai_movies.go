@@ -98,6 +98,7 @@ func TranslateMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 		var movies []types.Movie
 		var mu sync.Mutex
 		var wg sync.WaitGroup
+		errCh := make(chan error, 1) // Create error channel
 
 		// Iterate over the movie IDs and retrieve each movie
 		for _, id := range jsonInput {
@@ -106,9 +107,7 @@ func TranslateMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 				defer wg.Done()
 				movie, err := handlers.FindMovieByID(app, id)
 				if err != nil {
-					c.JSON(500, gin.H{
-						"error": fmt.Sprintf("Failed to get movie with ID %d", id),
-					})
+					errCh <- fmt.Errorf("failed to get movie with ID %d: %v", id, err)
 					return
 				}
 				// Append the retrieved movie to the movies slice
@@ -119,6 +118,15 @@ func TranslateMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 		}
 
 		wg.Wait()
+
+		select {
+		case err := <-errCh: // Check if there's an error
+			c.JSON(500, gin.H{
+				"error": fmt.Sprintf("Failed to process movie list: %v", err),
+			})
+			return
+		default: // If there's no error, continue
+		}
 
 		// we translate the movies to the specified language
 		translatedMovies, err := handlers.TranslateMoviesFromGPT3(app, movies, lang)

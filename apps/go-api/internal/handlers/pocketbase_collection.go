@@ -43,3 +43,41 @@ func SaveMovieToPocketbase(app *types.App, movie types.Movie) error {
 
 	return nil
 }
+
+// Check if tmdb_if + language is already in the collection
+func CheckIfMovieExistsInCollection(app *types.App, tmdb_id int, lang string) (bool, error) {
+	// Log in as admin to pb and get the token
+	adminAuthResponse, err := services.PBAdminAuth(app)
+	if err != nil {
+		fmt.Println("CheckIfMovieExistsInCollection: Failed to get token", err)
+		return false, fmt.Errorf("failed to get token: %w", err)
+	}
+
+	token := adminAuthResponse.Token
+	collectionUrl := app.MoviesCollectionURL
+
+	// Create a map with the filters
+	filters := map[string]string{
+		"tmdb_id": fmt.Sprintf("%d", tmdb_id),
+		"lang":    lang,
+	}
+	fmt.Println("Filters:", filters)
+
+	// Construct the filter string
+	filterStr := fmt.Sprintf("(tmdb_id='%d' && language='%s')", tmdb_id, lang)
+	fmt.Println("Filter string:", filterStr)
+
+	// Search in the collection if there is a movie with the same tmdb_id and language
+	searchResponse, err := services.PBGetItemFromCollection(collectionUrl, token, filterStr)
+	if err != nil {
+		return false, fmt.Errorf("failed to get item from collection: %w", err)
+	}
+
+	if searchResponse.TotalItems > 0 {
+		fmt.Println("Movie already exists in the collection. Item: %v", searchResponse)
+		return true, nil
+	}
+
+	return false, nil
+
+}

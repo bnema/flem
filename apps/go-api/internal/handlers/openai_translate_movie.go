@@ -19,6 +19,17 @@ func TranslateMoviesFromGPT3(app *types.App, movies []types.Movie, lang string) 
 	var wg sync.WaitGroup
 
 	for _, movie := range movies {
+		// Check if the movie has already been translated and saved to PocketBase
+		exists, err := CheckIfMovieExistsInCollection(app, movie.TmdbID, lang)
+		if err != nil {
+			return nil, fmt.Errorf("failed to check if movie exists in collection: %w", err)
+		}
+
+		// If the movie exists, skip this iteration
+		if exists {
+			fmt.Printf("Movie with tmdb_id: %d and language: %s already exists in collection. Skipping...\n", movie.TmdbID, lang)
+			continue
+		}
 		// Convert the movie object to a JSON string
 		movieJson, err := json.Marshal(movie)
 		if err != nil {
