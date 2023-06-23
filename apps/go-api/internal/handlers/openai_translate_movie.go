@@ -94,6 +94,18 @@ func TranslateMoviesFromGPT3(app *types.App, movies []types.Movie, lang string) 
 	// Collect the translated movies from the channel
 	var translatedMovies []types.Movie
 	for movie := range movieCh {
+		// We validate the movie data before returning it as a slice
+		err := services.ValidateMovieData(movie)
+		if err != nil {
+			return nil, fmt.Errorf("translated movie data is invalid: %w", err)
+		}
+
+		// If it's valid, we save it to the database
+		err = SaveMovieToPocketbase(app, movie)
+		if err != nil {
+			return nil, fmt.Errorf("failed to save movie to pocketbase: %w", err)
+		}
+
 		translatedMovies = append(translatedMovies, movie)
 	}
 
