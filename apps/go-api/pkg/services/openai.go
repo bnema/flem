@@ -14,7 +14,7 @@ func CallOPENAIApi(app *types.App, prompts []types.GPTPrompt, response interface
 	requestBody := map[string]interface{}{
 		"model":      app.OpenAI_Model,
 		"messages":   prompts,
-		"max_tokens": 2048,
+		"max_tokens": 3000, // Or any other number that suits your needs
 	}
 	requestBodyBytes, err := json.Marshal(requestBody)
 	if err != nil {

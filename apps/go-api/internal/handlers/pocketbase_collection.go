@@ -44,40 +44,45 @@ func SaveMovieToPocketbase(app *types.App, movie types.Movie) error {
 	return nil
 }
 
-// Check if tmdb_if + language is already in the collection
-func CheckIfMovieExistsInCollection(app *types.App, tmdb_id int, lang string) (bool, error) {
+// CheckIfMovieExistsInCollection checks if a movie exists in the collection
+func CheckIfMovieExistsInCollection(app *types.App, tmdb_id int, lang string) (map[string]interface{}, error) {
 	// Log in as admin to pb and get the token
 	adminAuthResponse, err := services.PBAdminAuth(app)
 	if err != nil {
 		fmt.Println("CheckIfMovieExistsInCollection: Failed to get token", err)
-		return false, fmt.Errorf("failed to get token: %w", err)
+		return nil, fmt.Errorf("failed to get token: %w", err)
 	}
 
 	token := adminAuthResponse.Token
 	collectionUrl := app.MoviesCollectionURL
 
-	// Create a map with the filters
-	filters := map[string]string{
-		"tmdb_id": fmt.Sprintf("%d", tmdb_id),
-		"lang":    lang,
-	}
-	fmt.Println("Filters:", filters)
+	// Since the filter on pocketbase is broken we can only pass the tmdb_id
+	filterStr := fmt.Sprintf("(tmdb_id='%d')", tmdb_id)
 
-	// Construct the filter string
-	filterStr := fmt.Sprintf("(tmdb_id='%d' && language='%s')", tmdb_id, lang)
-	fmt.Println("Filter string:", filterStr)
-
-	// Search in the collection if there is a movie with the same tmdb_id and language
+	// Search in the collection if there is a movie with the same tmdb_id
 	searchResponse, err := services.PBGetItemFromCollection(collectionUrl, token, filterStr)
 	if err != nil {
-		return false, fmt.Errorf("failed to get item from collection: %w", err)
+		return nil, fmt.Errorf("failed to get item from collection: %w", err)
 	}
 
-	if searchResponse.TotalItems > 0 {
-		fmt.Println("Movie already exists in the collection. Item: %v", searchResponse)
-		return true, nil
+	// This will return all the tmdb_id Movies in the collection, i need to check if the language is the same
+	if searchResponse != nil && searchResponse.Items != nil {
+		for _, movie := range searchResponse.Items {
+			movieMap, ok := movie.(map[string]interface{})
+			if !ok {
+				return nil, fmt.Errorf("failed to assert movie to map[string]interface{}: %v", movie)
+			}
+
+			if movieLanguage, ok := movieMap["language"].(string); ok && movieLanguage == lang {
+				fmt.Printf("Movie %d already exists in %s\n", tmdb_id, lang)
+				return movieMap, nil
+			}
+		}
+	} else {
+		fmt.Printf("No items in the searchResponse or searchResponse is nil\n")
 	}
 
-	return false, nil
+	fmt.Printf("No movie with tmdb_id %d and language %s found in the collection\n", tmdb_id, lang)
 
+	return nil, nil
 }

@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strings"
 
 	"github.com/bnema/flem/go-api/pkg/types"
 	"github.com/bnema/flem/go-api/pkg/utils"
@@ -19,7 +18,7 @@ const (
 
 var (
 	TMDB_API_KEY = os.Getenv("TMDB_API_KEY")
-	blacklist    map[string][]string
+	// blacklist    map[string][]string
 )
 
 // func init() {
@@ -50,9 +49,9 @@ func ValidateMovieData(movie types.Movie) error {
 	if movie.Adult {
 		return fmt.Errorf("movie %d is an adult movie", movie.TmdbID)
 	}
-	blacklistWords := utils.CheckBlacklist(movie, blacklist)
-	if len(blacklistWords) > 0 {
-		return fmt.Errorf("movie %d contains the following blacklisted words: %s", movie.TmdbID, strings.Join(blacklistWords, ", "))
-	}
+	// blacklistWords := utils.CheckBlacklist(movie, blacklist)
+	// if len(blacklistWords) > 0 {
+	// 	return fmt.Errorf("movie %d contains the following blacklisted words: %s", movie.TmdbID, strings.Join(blacklistWords, ", "))
+	// }
 	return nil
 }

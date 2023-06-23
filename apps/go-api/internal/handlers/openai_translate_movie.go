@@ -10,7 +10,7 @@ import (
 	"github.com/bnema/flem/go-api/pkg/types"
 )
 
-func TranslateMoviesFromGPT3(app *types.App, movies []types.Movie, lang string) ([]types.Movie, error) {
+func TranslateMoviesFromGPT3(app *types.App, movies []types.Movie, lang string) ([]types.Movie, []map[string]interface{}, error) {
 	// Create a channel to collect translated movies
 	movieCh := make(chan types.Movie, len(movies))
 	// Create a channel to collect any errors that occur
@@ -18,29 +18,32 @@ func TranslateMoviesFromGPT3(app *types.App, movies []types.Movie, lang string) 
 	// Create the WaitGroup outside of the goroutines
 	var wg sync.WaitGroup
 
+	var existingMovies []map[string]interface{}
+
 	for _, movie := range movies {
 		// Check if the movie has already been translated and saved to PocketBase
-		exists, err := CheckIfMovieExistsInCollection(app, movie.TmdbID, lang)
+		existingMovie, err := CheckIfMovieExistsInCollection(app, movie.TmdbID, lang)
 		if err != nil {
-			return nil, fmt.Errorf("failed to check if movie exists in collection: %w", err)
+			return nil, nil, fmt.Errorf("failed to check if movie exists in collection: %w", err)
 		}
 
-		// If the movie exists, skip this iteration
-		if exists {
-			fmt.Printf("Movie with tmdb_id: %d and language: %s already exists in collection. Skipping...\n", movie.TmdbID, lang)
+		// If the movie exists in the collection, skip the translation and give it from the collection
+		if existingMovie != nil {
+			existingMovies = append(existingMovies, existingMovie)
 			continue
 		}
+
 		// Convert the movie object to a JSON string
 		movieJson, err := json.Marshal(movie)
 		if err != nil {
-			return nil, fmt.Errorf("failed to marshal movie object: %w", err)
+			return nil, nil, fmt.Errorf("failed to marshal movie object: %w", err)
 		}
 
 		// Create the prompts for the conversation with the AI
 		prompts := []types.GPTPrompt{
 			{
 				Role:    "system",
-				Content: "You act as an API that translates movie details in the specified language: " + lang + ". Please take care to return the translations of all the movies in one JSON array. Please make sure to return a properly formatted JSON, do not translate the keys and in the language field, return the full language name in English.",
+				Content: "You are an AI translator. Your role is to translate the values of the movie details provided in JSON format from English to the specified language: " + lang + ". The JSON keys and the format of the data should remain the same. Only translate the values associated with the following keys: 'overview', 'title', 'tagline', 'genres', 'original_title', 'name' (in 'production_companies', 'genres', 'spoken_languages' and 'production_countries'), and 'status'. Leave the 'language' field empty. All other values must remain in their original form. The result should be a correctly formatted JSON object.",
 			},
 			{
 				Role:    "user",
@@ -61,17 +64,14 @@ func TranslateMoviesFromGPT3(app *types.App, movies []types.Movie, lang string) 
 				errCh <- fmt.Errorf("failed to call OPENAI API: %w", err)
 				return
 			}
-
 			// Check if response.Choices is not empty
 			if len(response.Choices) == 0 {
 				errCh <- fmt.Errorf("response.Choices is empty")
 				return
 			}
-
 			// Extract the message content from the response
 			messageContent := response.Choices[0].Message.Content
-			// Extract the JSON content from the message
-			startIndex := strings.Index(messageContent, "{")
+			startIndex := strings.Index(messageContent, "{\"id\"")
 			endIndex := strings.LastIndex(messageContent, "}")
 			if startIndex == -1 || endIndex == -1 || startIndex >= endIndex {
 				errCh <- fmt.Errorf("invalid JSON format in message content")
@@ -86,6 +86,9 @@ func TranslateMoviesFromGPT3(app *types.App, movies []types.Movie, lang string) 
 				return
 			}
 
+			// We insert the language here, because GPT3 is very inconsistent with the language
+			translatedMovie.Language = lang
+
 			// Send the translated movie to the channel
 			movieCh <- translatedMovie
 		}(prompts)
@@ -99,7 +102,7 @@ func TranslateMoviesFromGPT3(app *types.App, movies []types.Movie, lang string) 
 
 	// Check if any errors occurred in the goroutines
 	if len(errCh) > 0 {
-		return nil, <-errCh
+		return nil, nil, <-errCh
 	}
 
 	// Collect the translated movies from the channel
@@ -108,17 +111,17 @@ func TranslateMoviesFromGPT3(app *types.App, movies []types.Movie, lang string) 
 		// We validate the movie data before returning it as a slice
 		err := services.ValidateMovieData(movie)
 		if err != nil {
-			return nil, fmt.Errorf("translated movie data is invalid: %w", err)
+			return nil, nil, fmt.Errorf("translated movie data is invalid: %w", err)
 		}
 
 		// If it's valid, we save it to the database
 		err = SaveMovieToPocketbase(app, movie)
 		if err != nil {
-			return nil, fmt.Errorf("failed to save movie to pocketbase: %w", err)
+			return nil, nil, fmt.Errorf("failed to save movie to pocketbase: %w", err)
 		}
 
 		translatedMovies = append(translatedMovies, movie)
 	}
 
-	return translatedMovies, nil
+	return translatedMovies, existingMovies, nil
 }

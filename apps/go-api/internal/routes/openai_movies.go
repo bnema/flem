@@ -2,6 +2,7 @@ package routes
 
 import (
 	"fmt"
+	"net/http"
 	"sync"
 
 	"github.com/bnema/flem/go-api/internal/handlers"
@@ -128,16 +129,24 @@ func TranslateMoviesFromGPT3RouteHandler(app *types.App) gin.HandlerFunc {
 		default: // If there's no error, continue
 		}
 
-		// we translate the movies to the specified language
-		translatedMovies, err := handlers.TranslateMoviesFromGPT3(app, movies, lang)
+		translatedMovies, existingMovies, err := handlers.TranslateMoviesFromGPT3(app, movies, lang)
 		if err != nil {
 			c.JSON(500, gin.H{
 				"error": fmt.Sprintf("Failed to translate movies: %v", err),
 			})
 			return
 		}
-		fmt.Printf("translatedMovies: %v", translatedMovies)
 
-		c.JSON(200, translatedMovies)
+		// Add existing movies to the response if they exist
+		if len(existingMovies) > 0 {
+			c.JSON(http.StatusOK, gin.H{
+				"existing_movies":   existingMovies,
+				"translated_movies": translatedMovies,
+			})
+			return
+		}
+
+		// If there are no existing movies, just return the translated movies
+		c.JSON(http.StatusOK, translatedMovies)
 	}
 }

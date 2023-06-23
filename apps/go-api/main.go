@@ -27,7 +27,7 @@ func NewApp() *types.App {
 		PBUrl:          baseUrl.String(),
 		OpenAI_API_Key: os.Getenv("OPENAI_API_KEY"),
 		OpenAI_URL:     "https://api.openai.com/v1/chat/completions",
-		OpenAI_Model:   "gpt-3.5-turbo-0613",
+		OpenAI_Model:   "gpt-3.5-turbo",
 		// "gpt-3.5-turbo-0613",
 	}
 

@@ -107,8 +107,7 @@ func PBGetItemFromCollection(collectionUrl string, token string, filter string) 
 	var resp types.CollectionResponse
 
 	// Build the URL with the filters
-	url := fmt.Sprintf("%s?filter=%s", collectionUrl, url.QueryEscape(filter))
-	fmt.Println("PBGetItemFromCollection: url", url)
+	url := fmt.Sprintf("%s?filter=%s", collectionUrl, filter)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -118,8 +117,6 @@ func PBGetItemFromCollection(collectionUrl string, token string, filter string) 
 
 	// Add Authorization header with token
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
-	// fmt token
-	fmt.Println("PBGetItemFromCollection: token", token)
 
 	err = utils.GetJSON(req, &resp)
 	if err != nil {
