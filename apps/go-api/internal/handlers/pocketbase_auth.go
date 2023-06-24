@@ -3,6 +3,8 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/bnema/flem/go-api/pkg/types"
 	"github.com/bnema/flem/go-api/pkg/utils"
@@ -29,9 +31,12 @@ func GetAuthMethods(app *types.App, provider string) (types.AuthMethodsResponse,
 
 	for _, authMethod := range authMethods.AuthProviders {
 		if authMethod.Name == provider {
+			authMethod.AuthURL = strings.Replace(authMethod.AuthURL, "redirect_uri=", "redirect_uri="+url.QueryEscape(app.OAuthRedirectURL), 1)
 			filteredAuthMethods.AuthProviders = append(filteredAuthMethods.AuthProviders, authMethod)
 		}
 	}
+
+	fmt.Println("Filtered auth methods:", filteredAuthMethods)
 
 	return filteredAuthMethods, nil
 }

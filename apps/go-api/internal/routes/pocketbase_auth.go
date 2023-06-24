@@ -83,6 +83,7 @@ func RedirectRoute(app *types.App, c *gin.Context) {
 	}
 
 	tradeResponse, err := handlers.TradeCodeForToken(app, oAuthRequest)
+	fmt.Println(tradeResponse)
 	if err != nil {
 		c.JSON(400, map[string]string{
 			"error": "Failed to trade code for token",

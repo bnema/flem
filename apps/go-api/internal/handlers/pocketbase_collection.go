@@ -90,7 +90,15 @@ func CheckIfMovieExistsInCollection(app *types.App, tmdb_id int, lang string) (m
 }
 
 // UpdateUserHasMovies updates the user_has_movies collection (app, userId, token, userHasMovies))
-func UpdateUserHasMovies(app *types.App, userId string, token string, userHasMovies types.UserHasMovies) error {
+func UpdateUserHasMovies(app *types.App, userId string, userHasMovies types.UserHasMovies) error {
+	// Log in as admin to pb and get the token
+	adminAuthResponse, err := services.PBAdminAuth(app)
+	if err != nil {
+		fmt.Println("CheckIfMovieExistsInCollection: Failed to get token", err)
+		return fmt.Errorf("failed to get token: %w", err)
+	}
+
+	token := adminAuthResponse.Token
 	collectionUrl := app.UserHasMoviesCollectionURL
 
 	// Adding userId to userHasMovies
@@ -120,15 +128,25 @@ func UpdateUserHasMovies(app *types.App, userId string, token string, userHasMov
 }
 
 // GetUserHasMovies gets the user_has_movies collection (app, userId, token, userHasMovies))
-func GetUserHasMovies(app *types.App, userId string, token string) ([]types.UserHasMovies, error) {
+func GetUserHasMovies(app *types.App, userId string) ([]types.UserHasMovies, error) {
+	// Log in as admin to pb and get the token
+	adminAuthResponse, err := services.PBAdminAuth(app)
+	if err != nil {
+		fmt.Println("CheckIfMovieExistsInCollection: Failed to get token", err)
+		return nil, fmt.Errorf("failed to get token: %w", err)
+	}
+
+	token := adminAuthResponse.Token
 	collectionUrl := app.UserHasMoviesCollectionURL
 	var userHasMoviesCollection []types.UserHasMovies
 
-	// Since the filter on pocketbase is broken we can only pass the userId
-	filterStr := fmt.Sprintf("(User='%s')", userId)
+	// Construct the filter string
+	filterStr := fmt.Sprintf("(user='%s')", userId)
 
 	// Search in the collection if there is a user_has_movies with the same userId
 	searchResponse, err := services.PBGetItemFromCollection(collectionUrl, token, filterStr)
+
+	fmt.Println("searchResponse", searchResponse)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get item from collection: %w", err)
 	}

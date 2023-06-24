@@ -148,14 +148,6 @@ func PostUserMoviePreferencesRouteHandler(app *types.App) gin.HandlerFunc {
 			return
 		}
 
-		token, ok := session.Values["token"].(string)
-		if !ok {
-			c.JSON(http.StatusBadRequest, map[string]string{
-				"error": "No token in session",
-			})
-			return
-		}
-
 		// Get the user's movie preferences from the request body
 		var userHasMovies types.UserHasMovies
 		err := c.BindJSON(&userHasMovies)
@@ -167,7 +159,7 @@ func PostUserMoviePreferencesRouteHandler(app *types.App) gin.HandlerFunc {
 		}
 
 		// Update the user's movie preferences in PocketBase
-		err = handlers.UpdateUserHasMovies(app, userId, token, userHasMovies)
+		err = handlers.UpdateUserHasMovies(app, userId, userHasMovies)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, map[string]string{
 				"error": "Failed to update user's movie preferences",
@@ -205,16 +197,8 @@ func GetUserMoviePreferencesRouteHandler(app *types.App) gin.HandlerFunc {
 			return
 		}
 
-		token, ok := session.Values["token"].(string)
-		if !ok {
-			c.JSON(http.StatusBadRequest, map[string]string{
-				"error": "No token in session",
-			})
-			return
-		}
-
 		// Get the user's movie preferences from PocketBase
-		userHasMovies, err := handlers.GetUserHasMovies(app, userId, token)
+		userHasMovies, err := handlers.GetUserHasMovies(app, userId)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, map[string]string{
 				"error": "Failed to get user's movie preferences",
