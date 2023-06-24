@@ -13,20 +13,7 @@ import (
 	"github.com/gorilla/sessions"
 )
 
-// PingExample godoc
-// @Summary ping example
-// @Schemes
-// @Description do ping
-// @Tags example
-// @Accept json
-// @Produce json
-// @Success 200 {string} Helloworld
-// @Router /example/helloworld [get]
-func Helloworld(g *gin.Context) {
-	g.JSON(http.StatusOK, "helloworld")
-}
-
-// WhoAmI returns information about the currently authenticated user.
+// WhoAmIRouteHandler returns information about the currently authenticated user.
 // It retrieves the user's ID and token from the session,
 // and uses these to fetch the user's data from PocketBase.
 // @Summary Get current user information
@@ -40,7 +27,7 @@ func Helloworld(g *gin.Context) {
 // @Failure 400 {object} types.Error "Invalid request - No userId or token in session"
 // @Failure 500 {object} types.Error "Internal server error - Failed to get user from PocketBase"
 // @Router /whoami [get]
-func WhoAmI(app *types.App) gin.HandlerFunc {
+func WhoAmIRouteHandler(app *types.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := c.MustGet("session").(*sessions.Session)
 
@@ -72,7 +59,7 @@ func WhoAmI(app *types.App) gin.HandlerFunc {
 	}
 }
 
-// ListMoviesCollection returns a list of movies from a specified collection.
+// ListMoviesCollectionRouteHandler returns a list of movies from a specified collection.
 // @Summary Get list of movies from movie collection
 // @Description This API retrieves a list of movies from movie collection
 // @Tags Movies
@@ -82,7 +69,7 @@ func WhoAmI(app *types.App) gin.HandlerFunc {
 // @Success 200 {array} types.Movie "Successfully fetched movie collection"
 // @Failure 500 {object} types.Error "Internal server error - Failed to get token or movies collection"
 // @Router /movies [get]
-func ListMoviesCollection(app *types.App) gin.HandlerFunc {
+func ListMoviesCollectionRouteHandler(app *types.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Log as admin to pb and get the token
 		adminAuthResponse, err := services.PBAdminAuth(app)
@@ -133,5 +120,109 @@ func ListMoviesCollection(app *types.App) gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, movies) // send the movies to the client
+	}
+}
+
+// PostUserMoviePreferencesRouteHandler creates a new user's movie preference record.
+// @Summary Create new user's movie preferences
+// @Description This API creates a new record in the user_has_movies collection
+// @Tags User
+// @Accept  json
+// @Produce  json
+// @Security HTTPOnlySessionCookie
+// @Param userHasMovies body types.UserHasMovies true "User's movie preferences"
+// @Success 200 {object} map[string]string "Successfully created user's movie preferences"
+// @Failure 400 {object} types.Error "Bad request - No userId or token in session, Failed to parse request body"
+// @Failure 500 {object} types.Error "Internal server error - Failed to update user's movie preferences"
+// @Router /user/movie/preferences [post]
+func PostUserMoviePreferencesRouteHandler(app *types.App) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Get the user's ID and token from the session
+		session := c.MustGet("session").(*sessions.Session)
+
+		userId, ok := session.Values["userId"].(string)
+		if !ok {
+			c.JSON(http.StatusBadRequest, map[string]string{
+				"error": "No userId in session",
+			})
+			return
+		}
+
+		token, ok := session.Values["token"].(string)
+		if !ok {
+			c.JSON(http.StatusBadRequest, map[string]string{
+				"error": "No token in session",
+			})
+			return
+		}
+
+		// Get the user's movie preferences from the request body
+		var userHasMovies types.UserHasMovies
+		err := c.BindJSON(&userHasMovies)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, map[string]string{
+				"error": "Failed to parse request body",
+			})
+			return
+		}
+
+		// Update the user's movie preferences in PocketBase
+		err = handlers.UpdateUserHasMovies(app, userId, token, userHasMovies)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, map[string]string{
+				"error": "Failed to update user's movie preferences",
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, map[string]string{
+			"message": "Successfully updated user's movie preferences",
+		})
+	}
+}
+
+// GetUserMoviePreferencesRouteHandler gets the user's movie preferences (see types.UserHasMovies)
+// @Summary Get user's movie preferences
+// @Description This API retrieves a user's movie preferences from user_has_movies collection
+// @Tags User
+// @Accept  json
+// @Produce  json
+// @Security HTTPOnlySessionCookie
+// @Success 200 {object} types.UserHasMovies "Successfully fetched user's movie preferences"
+// @Failure 400 {object} types.Error "Bad request - No userId or token in session"
+// @Failure 500 {object} types.Error "Internal server error - Failed to get user's movie preferences"
+// @Router /user/movie/preferences [get]
+func GetUserMoviePreferencesRouteHandler(app *types.App) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Get the user's ID and token from the session
+		session := c.MustGet("session").(*sessions.Session)
+
+		userId, ok := session.Values["userId"].(string)
+		if !ok {
+			c.JSON(http.StatusBadRequest, map[string]string{
+				"error": "No userId in session",
+			})
+			return
+		}
+
+		token, ok := session.Values["token"].(string)
+		if !ok {
+			c.JSON(http.StatusBadRequest, map[string]string{
+				"error": "No token in session",
+			})
+			return
+		}
+
+		// Get the user's movie preferences from PocketBase
+		userHasMovies, err := handlers.GetUserHasMovies(app, userId, token)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, map[string]string{
+				"error": "Failed to get user's movie preferences",
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, userHasMovies)
+
 	}
 }

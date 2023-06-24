@@ -115,10 +115,12 @@ func TranslateMoviesFromGPT3(app *types.App, movies []types.Movie, lang string) 
 		}
 
 		// If it's valid, we save it to the database
-		err = SaveMovieToPocketbase(app, movie)
+		movie, err = SaveMovieToPocketbase(app, movie)
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to save movie to pocketbase: %w", err)
 		}
+
+		// And append it to the slice
 
 		translatedMovies = append(translatedMovies, movie)
 	}

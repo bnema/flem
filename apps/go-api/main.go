@@ -72,6 +72,13 @@ func NewApp() *types.App {
 	}
 	app.MoviesCollectionURL = MoviesCollectionURL.String()
 
+	// UserHasMovies :
+	UserHasMoviesCollectionURL, err := baseUrl.Parse("/api/collections/user_has_movies/records")
+	if err != nil {
+		panic(err)
+	}
+	app.UserHasMoviesCollectionURL = UserHasMoviesCollectionURL.String()
+
 	return app
 }
 

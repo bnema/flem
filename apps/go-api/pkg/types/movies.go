@@ -39,16 +39,16 @@ type Movie struct {
 }
 
 type UserHasMovies struct {
-	UserId    string    `json:"user_id"`
-	MovieId   string    `json:"movie_id"`
-	Liked     bool      `json:"liked"`
-	Watched   bool      `json:"watched"`
-	Suggested bool      `json:"suggested"`
-	Timestamp time.Time `json:"timestamp"`
-	Favorited bool      `json:"favorited"`
-	Shared    bool      `json:"shared"`
-	Rating    float64   `json:"rating"`
-	Review    string    `json:"review"`
+	ID        string  `json:"id"`
+	User      string  `json:"user"`  // Relation to User record
+	Movie     string  `json:"movie"` // Relation to Movie record
+	Liked     bool    `json:"liked"`
+	Watched   bool    `json:"watched"`
+	Suggested bool    `json:"suggested"`
+	Favorited bool    `json:"favorited"`
+	Shared    bool    `json:"shared"`
+	Rating    float64 `json:"rating"`
+	Review    string  `json:"review"`
 }
 
 type TmdbMovie struct {

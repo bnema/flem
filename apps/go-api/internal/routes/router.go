@@ -11,20 +11,25 @@ func SetupRouter(app *types.App) *gin.Engine {
 	r.Use(middlewares.SessionMiddleware(app))
 	v1 := r.Group("/api/v1")
 	{
-		eg := v1.Group("/example")
+		user := v1.Group("/user")
+		user.Use(middlewares.VerifyToken(app))
 		{
-			eg.GET("/helloworld", Helloworld)
+			movie := user.Group("/movie")
+			{
+				movie.POST("/preferences", PostUserMoviePreferencesRouteHandler(app)) // posts user movie preferences
+				movie.GET("/preferences", GetUserMoviePreferencesRouteHandler(app))   // gets user movie preferences
+			}
 		}
 
 		whoAmIRoute := v1.Group("/whoami")
 		whoAmIRoute.Use(middlewares.VerifyToken(app))
 		{
-			whoAmIRoute.GET("", WhoAmI(app))
+			whoAmIRoute.GET("", WhoAmIRouteHandler(app))
 		}
 		movieRoute := v1.Group("/movies")
 		movieRoute.Use(middlewares.VerifyToken(app))
 		{
-			movieRoute.GET("", ListMoviesCollection(app))
+			movieRoute.GET("", ListMoviesCollectionRouteHandler(app))
 		}
 
 		v1.GET("/login", func(c *gin.Context) {
