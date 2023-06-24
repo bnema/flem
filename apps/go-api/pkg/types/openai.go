@@ -12,3 +12,7 @@ type GPTResponse struct {
 		} `json:"message"`
 	} `json:"choices"`
 }
+
+type OpenAIRequestError struct {
+	Error string `json:"error"`
+}

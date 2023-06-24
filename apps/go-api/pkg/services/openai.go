@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/bnema/flem/go-api/pkg/types"
@@ -34,7 +35,12 @@ func CallOPENAIApi(app *types.App, prompts []types.GPTPrompt, response interface
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return fmt.Errorf("failOpenAI_API_URLed to send request: %w", err)
+		return fmt.Errorf("failed to send request: %w", err)
+	}
+
+	// Check the response status
+	if resp.StatusCode != http.StatusOK {
+		return handleAPIError(resp)
 	}
 
 	// Read the response body
@@ -93,4 +99,35 @@ func CallOPENAIApiWithFunctionDefinition(app *types.App, prompts []types.GPTProm
 	}
 	return nil
 
+}
+
+// handleAPIError handles the error returned by the OpenAI API
+func handleAPIError(resp *http.Response) error {
+	body, _ := io.ReadAll(resp.Body)
+	var serverErr types.OpenAIRequestError
+	json.Unmarshal(body, &serverErr)
+
+	switch resp.StatusCode {
+	case 401:
+		if serverErr.Error == "Invalid Authentication" {
+			return fmt.Errorf("invalid authentication: please ensure the correct API key and requesting organization are being used")
+		} else if serverErr.Error == "Incorrect API key provided" {
+			return fmt.Errorf("incorrect API key provided: ensure the API key used is correct, clear your browser cache, or generate a new one")
+		} else if serverErr.Error == "You must be a member of an organization to use the API" {
+			return fmt.Errorf("you must be a member of an organization to use the API: contact OpenAI to get added to a new organization or ask your organization manager to invite you")
+		}
+	case 429:
+		if serverErr.Error == "Rate limit reached for requests" {
+			return fmt.Errorf("rate limit reached: pace your requests according to the rate limit guide")
+		} else if serverErr.Error == "You exceeded your current quota, please check your plan and billing details" {
+			return fmt.Errorf("you have exceeded your current quota: please check your plan and billing details, or apply for a quota increase")
+		}
+	case 500:
+		return fmt.Errorf("server error while processing your request: retry after a brief wait and contact OpenAI if the issue persists")
+	case 503:
+		return fmt.Errorf("the engine is currently overloaded: please try again later")
+	default:
+		return fmt.Errorf("received unexpected status code: %d, error message: %s", resp.StatusCode, serverErr.Error)
+	}
+	return nil
 }
