@@ -38,6 +38,19 @@ type Movie struct {
 	VoteCount           int                 `json:"vote_count"`
 }
 
+type UserHasMovies struct {
+	UserId    string    `json:"user_id"`
+	MovieId   string    `json:"movie_id"`
+	Liked     bool      `json:"liked"`
+	Watched   bool      `json:"watched"`
+	Suggested bool      `json:"suggested"`
+	Timestamp time.Time `json:"timestamp"`
+	Favorited bool      `json:"favorited"`
+	Shared    bool      `json:"shared"`
+	Rating    float64   `json:"rating"`
+	Review    string    `json:"review"`
+}
+
 type TmdbMovie struct {
 	ID                  int                 `json:"id"`
 	ImdbID              string              `json:"imdb_id"`
