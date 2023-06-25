@@ -9,6 +9,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
+// SaveMovieToPocketbase saves a movie to the collection
 func SaveMovieToPocketbase(app *types.App, movie types.Movie) (types.Movie, error) {
 	// Log in as admin to pb and get the token
 	adminAuthResponse, err := services.PBAdminAuth(app)
@@ -39,10 +40,25 @@ func SaveMovieToPocketbase(app *types.App, movie types.Movie) (types.Movie, erro
 	}
 
 	if savedItem != nil {
+		fmt.Println("Saved item:", savedItem)
+
+		// Convert the map to JSON
+		savedItemJson, err := json.Marshal(savedItem)
+		if err != nil {
+			return types.Movie{}, fmt.Errorf("failed to marshal savedItem to json: %w", err)
+		}
+
+		// Convert the JSON to a Movie
+		var savedMovie types.Movie
+		err = json.Unmarshal(savedItemJson, &savedMovie)
+		if err != nil {
+			return types.Movie{}, fmt.Errorf("failed to unmarshal json to types.Movie: %w", err)
+		}
+
 		fmt.Println("Movie saved successfully to the collection. Saved item:")
-		// Assuming PBSaveItemToCollection returns a Movie
-		return savedItem.(types.Movie), nil
+		return savedMovie, nil
 	}
+
 	return types.Movie{}, nil
 }
 
@@ -89,8 +105,8 @@ func CheckIfMovieExistsInCollection(app *types.App, tmdb_id int, lang string) (m
 	return nil, nil
 }
 
-// UpdateUserHasMovies updates the user_has_movies collection (app, userId, token, userHasMovies))
-func UpdateUserHasMovies(app *types.App, userId string, userHasMovies types.UserHasMovies) error {
+// SaveUserHasMovies save preferences for a movie to the user_has_movies collection
+func SaveUserHasMovies(app *types.App, userId string, userHasMovies types.UserHasMovies) error {
 	// Log in as admin to pb and get the token
 	adminAuthResponse, err := services.PBAdminAuth(app)
 	if err != nil {

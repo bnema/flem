@@ -12,6 +12,7 @@ type Movie struct {
 	TmdbID              int                 `json:"tmdb_id"`
 	ImdbID              string              `json:"imdb_id"`
 	Language            string              `json:"language"`
+	Title               string              `json:"title"`
 	Adult               bool                `json:"adult"`
 	BackdropPath        string              `json:"backdrop_path"`
 	BelongsToCollection *interface{}        `json:"belongs_to_collection"`
@@ -32,7 +33,6 @@ type Movie struct {
 	SpokenLanguages     []SpokenLanguage    `json:"spoken_languages"`
 	Status              string              `json:"status"`
 	Tagline             string              `json:"tagline"`
-	Title               string              `json:"title"`
 	Video               bool                `json:"video"`
 	VoteAverage         float64             `json:"vote_average"`
 	VoteCount           int                 `json:"vote_count"`

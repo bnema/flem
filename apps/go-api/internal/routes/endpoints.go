@@ -159,7 +159,7 @@ func PostUserMoviePreferencesRouteHandler(app *types.App) gin.HandlerFunc {
 		}
 
 		// Update the user's movie preferences in PocketBase
-		err = handlers.UpdateUserHasMovies(app, userId, userHasMovies)
+		err = handlers.SaveUserHasMovies(app, userId, userHasMovies)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, map[string]string{
 				"error": "Failed to update user's movie preferences",

@@ -44,7 +44,7 @@ func SetupRouter(app *types.App) *gin.Engine {
 			tmdb.POST("/movies/post/title", TMDBMovieByTitleRouteHandler)
 			tmdb.POST("/movies/post/ids", TMDBMoviesByIDSRouteHandler(app))
 			tmdb.GET("/movies", TMDBMoviesByGenreAndDateRouteHandler)
-			tmdb.GET("/movies/random10", TMDBRandomMoviesRouteHandler)
+			tmdb.GET("/movies/random10", TMDBRandomMoviesRouteHandler(app))
 		}
 		openai := v1.Group("/openai")
 		openai.Use(middlewares.VerifyToken(app))

@@ -1,16 +1,19 @@
 package routes
 
 import (
+	"math/rand"
 	"net/url"
+	"strconv"
 
 	"github.com/bnema/flem/go-api/internal/handlers"
 	"github.com/bnema/flem/go-api/pkg/services"
 	"github.com/bnema/flem/go-api/pkg/types"
+	"github.com/bnema/flem/go-api/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 
 type TmdbApiResponse struct {
-	Results []types.Movie `json:"results"`
+	Results []types.TmdbMovie `json:"results"`
 }
 
 // @Summary Search movies by title
@@ -88,20 +91,47 @@ func TMDBMoviesByIDSRouteHandler(app *types.App) gin.HandlerFunc {
 // @Success 200 {array} types.Movie
 // @Failure 500 {object} types.Error
 // @Router /tmdb/movies/random10 [get]
-func TMDBRandomMoviesRouteHandler(c *gin.Context) {
-	var apiResponse TmdbApiResponse
-	query := url.Values{}
-	query.Add("sort_by", "popularity.desc")
-	query.Add("page", "1")
-	err := services.CallTMDBApi("/discover/movie", query, &apiResponse)
-	if err != nil {
-		c.JSON(500, gin.H{
-			"error": "Something went wrong",
-		})
-		return
-	}
+func TMDBRandomMoviesRouteHandler(app *types.App) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var apiResponse TmdbApiResponse
+		query := url.Values{}
 
-	c.JSON(200, apiResponse.Results)
+		// Generate a random page number between 1 and 500
+		randomPage := strconv.Itoa(rand.Intn(500) + 1)
+		query.Add("page", randomPage)
+
+		// Random sort orders
+		sortOrders := []string{"popularity.asc", "popularity.desc", "release_date.asc", "release_date.desc", "revenue.asc", "revenue.desc", "vote_average.asc", "vote_average.desc"}
+		randomSortOrder := sortOrders[rand.Intn(len(sortOrders))]
+		query.Add("sort_by", randomSortOrder)
+
+		err := services.CallTMDBApi("/discover/movie", query, &apiResponse)
+		if err != nil {
+			c.JSON(500, gin.H{
+				"error": "Something went wrong",
+			})
+			return
+		}
+
+		var movies []types.Movie
+		for _, tmdbMovie := range apiResponse.Results {
+			// Use the convert function to convert the tmdbMovie to a Movie
+			movie := utils.ConvertTmdbMovieToMovie(tmdbMovie)
+
+			// Save the movie to Pocketbase
+			result, err := handlers.SaveMovieToPocketbase(app, movie)
+			if err != nil {
+				c.JSON(500, gin.H{
+					"error": "Error saving movie to Pocketbase",
+				})
+				return
+			}
+			// Append the result of the save operation to the list of results
+			movies = append(movies, result)
+		}
+
+		c.JSON(200, movies)
+	}
 }
 
 // @Summary Get movies by genre and release date
